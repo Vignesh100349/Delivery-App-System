@@ -17,7 +17,7 @@ interface PaymentStore {
     clearMethods: () => void;
 }
 
-const API_URL = 'http://192.168.1.3:5000';
+const API_URL = 'https://delivery-app-system.onrender.com';
 
 export const usePaymentStore = create<PaymentStore>((set) => ({
     savedMethods: [],
