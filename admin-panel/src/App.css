@@ -1,0 +1,302 @@
+.admin-container {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  max-width: 100%;
+  margin: 0;
+  padding: 20px 40px;
+  background-color: #bee2fd;
+  min-height: 100vh;
+  box-sizing: border-box;
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 40px;
+  color: #0c831f;
+  /* Blinkit Green */
+  background: white;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.04);
+}
+
+.header h1 {
+  margin: 0 0 10px 0;
+  font-size: 2.2rem;
+}
+
+.header p {
+  color: #555;
+  margin: 0;
+  font-size: 1.1rem;
+}
+
+.add-product-section {
+  background: white;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+  margin-bottom: 40px;
+}
+
+.add-product-section h2 {
+  margin-top: 0;
+  color: #333;
+  margin-bottom: 25px;
+  border-bottom: 2px solid #eee;
+  padding-bottom: 10px;
+}
+
+.product-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+}
+
+.form-row {
+  display: flex;
+  gap: 20px;
+}
+
+.form-row>.form-group {
+  flex: 1;
+}
+
+label {
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: #444;
+}
+
+input,
+select {
+  padding: 12px 15px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: border-color 0.2s;
+  background-color: white;
+}
+
+input:focus,
+select:focus {
+  outline: none;
+  border-color: #0c831f;
+  box-shadow: 0 0 0 2px rgba(12, 131, 31, 0.1);
+}
+
+.submit-btn {
+  background-color: #0c831f;
+  color: white;
+  font-weight: bold;
+  font-size: 1.1rem;
+  padding: 15px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  margin-top: 10px;
+  transition: background-color 0.2s;
+}
+
+.submit-btn:hover {
+  background-color: #096818;
+}
+
+/* Product list Grid */
+.product-list-section h2 {
+  color: #333;
+  margin-bottom: 20px;
+}
+
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 20px;
+}
+
+.product-card {
+  background: white;
+  border-radius: 12px;
+  padding: 15px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  text-align: left;
+  transition: transform 0.2s;
+}
+
+.product-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+}
+
+.product-image {
+  width: 100%;
+  height: 160px;
+  object-fit: contain;
+  margin-bottom: 15px;
+}
+
+.product-info h3 {
+  margin: 0 0 8px 0;
+  font-size: 1.1rem;
+  color: #222;
+  line-height: 1.3;
+}
+
+.price-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.price {
+  font-weight: bold;
+  color: #0c831f;
+  font-size: 1.2rem;
+}
+
+.original-price {
+  color: #aaa;
+  text-decoration: line-through;
+  font-size: 0.9rem;
+}
+
+.detail {
+  margin: 4px 0;
+  color: #666;
+  font-size: 0.9rem;
+}
+
+.weight {
+  font-weight: 500;
+  color: #555;
+  background: #f4f4f4;
+  display: inline-block;
+  padding: 3px 8px;
+  border-radius: 4px;
+}
+
+.stock {
+  font-weight: bold;
+  color: #d12948;
+}
+
+.no-products {
+  grid-column: 1 / -1;
+  text-align: center;
+  color: #777;
+  font-size: 1.2rem;
+  padding: 40px;
+  background: white;
+  border-radius: 12px;
+}
+
+/* Edit and Delete features */
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 2px solid #eee;
+  padding-bottom: 10px;
+  margin-bottom: 25px;
+}
+
+.section-header h2 {
+  border-bottom: none;
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+
+.cancel-btn {
+  background-color: #f4f4f4;
+  border: 1px solid #ccc;
+  padding: 8px 15px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.cancel-btn:hover {
+  background-color: #ddd;
+}
+
+.search-id-bar {
+  display: flex;
+  flex-direction: column;
+  background: #f0f7f1;
+  padding: 15px;
+  border-radius: 6px;
+  margin-bottom: 10px;
+  border-left: 4px solid #0c831f;
+}
+
+.id-input {
+  max-width: 250px;
+  margin-top: 5px;
+}
+
+.image-fetch-row {
+  display: flex;
+  gap: 10px;
+}
+
+.image-fetch-row input {
+  flex: 1;
+}
+
+.fetch-img-btn {
+  background-color: #fff;
+  color: #0c831f;
+  border: 2px solid #0c831f;
+  padding: 0 20px;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.fetch-img-btn:hover {
+  background-color: #0c831f;
+  color: #fff;
+}
+
+.card-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: -15px;
+  position: relative;
+  z-index: 2;
+  background: rgba(255, 255, 255, 0.8);
+  padding: 5px;
+  border-radius: 8px;
+}
+
+.card-id {
+  font-weight: bold;
+  font-size: 1rem;
+  color: #555;
+}
+
+.icon-btn {
+  background: transparent;
+  border: none;
+  font-size: 1.2rem;
+  cursor: pointer;
+  padding: 5px;
+  border-radius: 4px;
+  transition: background 0.2s;
+}
+
+.edit-icon:hover {
+  background: #e6f7ff;
+}
+
+.del-icon:hover {
+  background: #ffe6e6;
+}

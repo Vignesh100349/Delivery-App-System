@@ -1,0 +1,36 @@
+{
+  "expo": {
+    "name": "nand",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/loopie_icon.png",
+    "userInterfaceStyle": "light",
+    "newArchEnabled": false,
+    "splash": {
+      "image": "./assets/blank.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/loopie_icon.png",
+        "backgroundColor": "#ffffff"
+      },
+      "package": "com.love.customer",
+      "googleServicesFile": "./google-services.json",
+      "edgeToEdgeEnabled": true,
+      "predictiveBackGestureEnabled": false
+    },
+    "web": {
+      "favicon": "./assets/loopie_icon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "fae1471f-052f-41ad-892d-56ea914becca"
+      }
+    }
+  }
+}

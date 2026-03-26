@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "930400554055",
+    "project_id": "mylove-c7e28",
+    "storage_bucket": "mylove-c7e28.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:930400554055:android:31863432129fc047aa3562",
+        "android_client_info": {
+          "package_name": "com.love.customer"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBQro98ljPY033LaPKnko2ayZfdzuS0XEg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:930400554055:android:83bd119013f5ba42aa3562",
+        "android_client_info": {
+          "package_name": "com.love.deliverypartner"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBQro98ljPY033LaPKnko2ayZfdzuS0XEg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
