@@ -13,14 +13,14 @@ export const LoginScreen = () => {
         const cleanPhone = phone.trim();
         const cleanPassword = password.trim();
 
-        if (cleanPhone.length < 10 || cleanPassword.length === 0) {
-            Alert.alert("Invalid", "Enter valid 10-digit Mobile Number and password");
+        if (cleanPhone.length < 3 || cleanPassword.length === 0) {
+            Alert.alert("Invalid", "Enter a valid authorized System ID and Password");
             return;
         }
         
         setLoading(true);
         try {
-            const res = await axios.post('http://192.168.1.3:5000/driver-login', { phone: cleanPhone, password: cleanPassword });
+            const res = await axios.post('https://delivery-app-system.onrender.com/driver-login', { phone: cleanPhone, password: cleanPassword });
             login(res.data.id.toString(), res.data.name);
         } catch (err: any) {
             console.error(err);
@@ -39,9 +39,9 @@ export const LoginScreen = () => {
                     <Text style={styles.subtitle}>Enter your authorized Mobile Number and password to selectively login</Text>
                     <TextInput 
                         style={styles.input} 
-                        placeholder="10-Digit Mobile Number" 
-                        keyboardType="phone-pad"
-                        maxLength={10}
+                        placeholder="Driver ID or Phone Number" 
+                        keyboardType="default"
+                        autoCapitalize="none"
                         value={phone} 
                         onChangeText={setPhone} 
                     />

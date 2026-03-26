@@ -6,7 +6,7 @@ import * as Location from 'expo-location';
 import { ProductCard } from '../components/ProductCard';
 import { FloatingCartButton } from '../components/FloatingCartButton';
 
-const API_URL = 'http://192.168.1.3:5000';
+const API_URL = 'https://delivery-app-system.onrender.com';
 
 import { useNavigation } from '@react-navigation/native';
 

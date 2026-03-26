@@ -5,7 +5,7 @@ import { useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import { useAuthStore } from '../store/useAuthStore';
 
-const API_URL = 'http://192.168.1.3:5000';
+const API_URL = 'https://delivery-app-system.onrender.com';
 
 export const OrdersScreen = () => {
     const navigation = useNavigation<any>();

@@ -4,7 +4,7 @@ import axios from 'axios';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import * as Linking from 'expo-linking';
 
-const API_URL = 'http://192.168.1.3:5000';
+const API_URL = 'https://delivery-app-system.onrender.com';
 
 export const OrderDetailsScreen = () => {
     const route = useRoute<any>();

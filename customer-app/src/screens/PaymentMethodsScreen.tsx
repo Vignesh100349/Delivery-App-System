@@ -5,7 +5,7 @@ import axios from 'axios';
 import { useCartStore } from '../store/useCartStore';
 import { useAuthStore } from '../store/useAuthStore';
 
-const API_URL = 'http://192.168.1.3:5000';
+const API_URL = 'https://delivery-app-system.onrender.com';
 
 export const PaymentMethodsScreen = () => {
     const navigation = useNavigation<any>();

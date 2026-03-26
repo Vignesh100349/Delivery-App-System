@@ -5,7 +5,7 @@ import { ProductCard } from '../components/ProductCard';
 import { FloatingCartButton } from '../components/FloatingCartButton';
 import { useNavigation } from '@react-navigation/native';
 
-const API_URL = 'http://192.168.1.3:5000';
+const API_URL = 'https://delivery-app-system.onrender.com';
 
 export const SubCategoryScreen = ({ route }: any) => {
     const { id, name } = route.params || { id: '1-1', name: 'Products' };

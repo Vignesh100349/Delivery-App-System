@@ -7,7 +7,7 @@
     "userInterfaceStyle": "light",
     "newArchEnabled": false,
     "splash": {
-      "image": "./assets/blank.png",
+      "image": "./assets/loopie_icon.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },

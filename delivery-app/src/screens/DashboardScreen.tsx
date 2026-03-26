@@ -4,7 +4,7 @@ import axios from 'axios';
 import { useAuthStore } from '../store/useAuthStore';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 
-const API_URL = 'http://192.168.1.3:5000';
+const API_URL = 'https://delivery-app-system.onrender.com';
 
 export const DashboardScreen = () => {
     const { driverId, driverName, logout } = useAuthStore();

@@ -5,7 +5,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useCartStore } from '../store/useCartStore';
 import axios from 'axios';
 
-const API_URL = 'http://192.168.1.3:5000';
+const API_URL = 'https://delivery-app-system.onrender.com';
 
 export const PaymentAuthScreen = () => {
     const navigation = useNavigation<any>();

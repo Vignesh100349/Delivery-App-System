@@ -173,7 +173,7 @@ app.post('/driver-login', async (req, res) => {
   try {
     const { phone, password } = req.body;
     const result = await pool.query(
-      "SELECT id, name, username, phone, role, password, is_online FROM users WHERE phone = $1 AND role = 'rider'",
+      "SELECT id, name, username, phone, role, password, is_online FROM users WHERE (phone = $1 OR username = $1) AND role = 'rider'",
       [phone]
     );
 
@@ -193,23 +193,24 @@ app.post('/driver-login', async (req, res) => {
   }
 });
 
-/* Admin: Create New Rider (Phone Only) */
+/* Admin: Create New Rider */
 app.post('/riders', async (req, res) => {
   try {
-    const { phone, name } = req.body;
-    const defaultPassword = 'Loopie$123';
-    // Let username match phone or null
+    const { username, password } = req.body;
+    const phone = username; // Map identically natively
+    const name = `Driver ${username}`;
+
     try {
       const result = await pool.query(
-        "INSERT INTO users(name, username, phone, password, role) VALUES($1, $2, $2, $3, 'rider') RETURNING id, phone",
-        [name || 'Delivery Partner', phone, defaultPassword]
+        "INSERT INTO users(name, username, phone, password, role) VALUES($1, $2, $3, $4, 'rider') RETURNING id, phone",
+        [name, username, phone, password]
       );
       res.json(result.rows[0]);
     } catch(err) {
       if (err.code === '23505') {
         const updateRes = await pool.query(
-          "UPDATE users SET role = 'rider', password = $1, username = $2 WHERE phone = $2 RETURNING id, phone",
-          [defaultPassword, phone]
+          "UPDATE users SET role = 'rider', password = $1, username = $2 WHERE phone = $3 RETURNING id, phone",
+          [password, username, phone]
         );
         return res.json(updateRes.rows[0]);
       }
