@@ -35,6 +35,11 @@ const initDb = async () => {
     `);
     await pool.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS wallet_balance DECIMAL(10,2) DEFAULT 0.00`).catch(e => console.log(e.message));
     await pool.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS username VARCHAR(255) UNIQUE`).catch(e => console.log(e.message));
+    await pool.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS is_online BOOLEAN DEFAULT true`).catch(e => console.log(e.message));
+    await pool.query(`ALTER TABLE orders ADD COLUMN IF NOT EXISTS delivery_partner_id INT`).catch(e => console.log(e.message));
+    await pool.query(`ALTER TABLE orders ADD COLUMN IF NOT EXISTS driver_location JSON`).catch(e => console.log(e.message));
+    await pool.query(`ALTER TABLE orders ADD COLUMN IF NOT EXISTS delivery_otp VARCHAR(4)`).catch(e => console.log(e.message));
+    // Support Cashfree Order Status syncing inherently:
     console.log("Database initialized successfully.");
   } catch(e) {
     console.error("Database init error:", e.message);
