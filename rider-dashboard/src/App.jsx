@@ -3,7 +3,7 @@ import axios from 'axios';
 import { Users, Truck, LogOut, FileText, CheckCircle, Smartphone } from 'lucide-react';
 import './App.css';
 
-const API_URL = 'http://localhost:5000';
+const API_URL = 'https://delivery-app-system.onrender.com';
 
 export default function App() {
   const [riders, setRiders] = useState([]);

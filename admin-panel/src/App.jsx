@@ -34,7 +34,7 @@ function App() {
     { id: '10', name: 'Sweet Tooth' },
   ]
 
-  const API_URL = 'http://localhost:5000'
+  const API_URL = 'https://delivery-app-system.onrender.com'
 
   useEffect(() => {
     fetchProducts()
