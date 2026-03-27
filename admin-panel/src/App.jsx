@@ -458,13 +458,14 @@ function App() {
             <h3 style={{ marginTop: '0', marginBottom: '15px' }}>Authorize New Delivery Partner</h3>
             <div className="form-row" style={{ display: 'flex', gap: '15px', marginBottom: '15px' }}>
               <div className="form-group" style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-                <label style={{ fontSize: '13px', fontWeight: 'bold', marginBottom: '5px' }}>Assigned User ID</label>
+                <label style={{ fontSize: '13px', fontWeight: 'bold', marginBottom: '5px' }}>Assigned Mobile Number (10 Digits)</label>
                 <input 
-                  type="text" 
+                  type="tel" 
                   value={riderUsername} 
-                  onChange={e => setRiderUsername(e.target.value)} 
+                  onChange={e => setRiderUsername(e.target.value.replace(/[^0-9]/g, '').slice(0, 10))} 
                   required 
-                  placeholder="e.g. RIDER_VIGNESH" 
+                  maxLength="10"
+                  placeholder="e.g. 9876543210" 
                   style={{ padding: '10px', borderRadius: '4px', border: '1px solid #ccc' }} 
                 />
               </div>

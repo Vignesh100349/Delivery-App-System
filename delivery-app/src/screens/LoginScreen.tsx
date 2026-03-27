@@ -13,8 +13,8 @@ export const LoginScreen = () => {
         const cleanPhone = phone.trim();
         const cleanPassword = password.trim();
 
-        if (cleanPhone.length < 3 || cleanPassword.length === 0) {
-            Alert.alert("Invalid", "Enter a valid authorized System ID and Password");
+        if (cleanPhone.length !== 10 || cleanPassword.length === 0) {
+            Alert.alert("Invalid", "Enter a valid 10-digit Mobile Number and Password");
             return;
         }
         
@@ -39,9 +39,9 @@ export const LoginScreen = () => {
                     <Text style={styles.subtitle}>Enter your authorized Mobile Number and password to selectively login</Text>
                     <TextInput 
                         style={styles.input} 
-                        placeholder="Driver ID or Phone Number" 
-                        keyboardType="default"
-                        autoCapitalize="none"
+                        placeholder="10-Digit Mobile Number" 
+                        keyboardType="phone-pad"
+                        maxLength={10}
                         value={phone} 
                         onChangeText={setPhone} 
                     />
