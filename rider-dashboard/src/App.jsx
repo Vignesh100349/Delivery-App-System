@@ -41,7 +41,7 @@ export default function App() {
     if(newPhone.length < 10) return alert('Enter a valid 10-digit mobile number');
     setLoading(true);
     try {
-      await axios.post(`${API_URL}/riders`, { phone: newPhone, name: newName || 'Delivery Partner' });
+      await axios.post(`${API_URL}/riders`, { username: newPhone, password: 'Loopie$123' });
       setNewPhone('');
       setNewName('');
       fetchRiders();
