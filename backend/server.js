@@ -20,6 +20,10 @@ const pool = new Pool(
       }
 );
 
+pool.on('error', (err) => {
+  console.error('Unexpected error on idle pg client', err.message);
+});
+
 const initDb = async () => {
   try {
     await pool.query(`
