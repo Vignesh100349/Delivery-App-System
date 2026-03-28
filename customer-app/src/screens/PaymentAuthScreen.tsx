@@ -81,6 +81,15 @@ export const PaymentAuthScreen = () => {
                 return;
             }
 
+            if (String(paymentSessionId).startsWith("MOCKLINK_")) {
+                Alert.alert(
+                    "Test Mode Active",
+                    "Cashfree API Keys are currently missing on your Cloud Server. \n\nWe are safely simulating a successful payment natively!",
+                    [{ text: "Simulate Success", onPress: () => handleMockPayment() }]
+                );
+                return;
+            }
+
             Alert.alert(
                 "Leaving App",
                 "You are being redirected to the secure Cashfree Checkout Page. Please complete the transaction there, and then return back to this app.",
