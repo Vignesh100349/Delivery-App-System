@@ -22,11 +22,12 @@ export const OrdersScreen = () => {
 
     const fetchOrders = async (isBackground = false) => {
         try {
-            const res = await axios.get(`${API_URL}/orders`);
-            const data = res.data;
-            if (Array.isArray(data)) {
-                const fetchedUserId = user?.id || 1;
-                const myOrders = data.filter((o: any) => o.user_id === fetchedUserId).slice(0, 10);
+            if (!user?.id) return; // Prevent anonymous array overlaps
+            
+            const res = await axios.get(`${API_URL}/customer/orders/${user.id}`);
+            const myOrders = res.data;
+
+            if (Array.isArray(myOrders)) {
                 
                 // Track Status Changes Natively for Pseudo Push Notifications
                 if (isBackground && ordersRef.current.length > 0) {

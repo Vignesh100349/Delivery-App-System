@@ -412,6 +412,34 @@ app.get('/orders', async (req, res) => {
   }
 })
 
+/* Get Specific Customer Orders */
+app.get('/customer/orders/:userId', async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const ordersRes = await pool.query(`
+      SELECT o.*, 
+        c.phone as customer_phone, c.name as customer_name,
+        r.phone as rider_phone, r.name as rider_name
+      FROM orders o
+      LEFT JOIN users c ON o.user_id = c.id
+      LEFT JOIN users r ON o.delivery_partner_id = r.id
+      WHERE o.user_id = $1
+      ORDER BY o.created_at DESC
+    `, [userId]);
+
+    const itemsRes = await pool.query('SELECT oi.*, p.name, p.image FROM order_items oi JOIN products p ON oi.product_id = p.id');
+    
+    const orders = ordersRes.rows.map(order => ({
+      ...order,
+      items: itemsRes.rows.filter(item => item.order_id === order.id)
+    }));
+    
+    res.json(orders);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 /* Rider Web Panel: Get Explicit Assigned Dispatches */
 app.get('/driver/orders/:driverId', async (req, res) => {
   try {
