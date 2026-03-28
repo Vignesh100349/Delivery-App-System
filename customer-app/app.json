@@ -4,7 +4,6 @@
     "slug": "nand",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/square_icon.png",
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
     "splash": {
@@ -12,14 +11,7 @@
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
-    "ios": {
-      "supportsTablet": true
-    },
     "android": {
-      "adaptiveIcon": {
-        "foregroundImage": "./assets/square_icon.png",
-        "backgroundColor": "#ffffff"
-      },
       "package": "com.love.customer",
       "googleServicesFile": "./google-services.json",
       "edgeToEdgeEnabled": true,
@@ -36,7 +28,8 @@
             "newArchEnabled": true
           }
         }
-      ]
+      ],
+      "expo-font"
     ],
     "extra": {
       "eas": {
