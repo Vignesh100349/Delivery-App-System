@@ -1,11 +1,12 @@
 {
   "expo": {
-    "name": "nand",
+    "name": "Loopie Delivery",
+    "slug": "nand",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/loopie_icon.png",
+    "icon": "./assets/square_icon.png",
     "userInterfaceStyle": "light",
-    "newArchEnabled": false,
+    "newArchEnabled": true,
     "splash": {
       "image": "./assets/loopie_icon.png",
       "resizeMode": "contain",
@@ -16,7 +17,7 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/loopie_icon.png",
+        "foregroundImage": "./assets/square_icon.png",
         "backgroundColor": "#ffffff"
       },
       "package": "com.love.customer",
@@ -27,6 +28,16 @@
     "web": {
       "favicon": "./assets/loopie_icon.png"
     },
+    "plugins": [
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "newArchEnabled": true
+          }
+        }
+      ]
+    ],
     "extra": {
       "eas": {
         "projectId": "fae1471f-052f-41ad-892d-56ea914becca"
