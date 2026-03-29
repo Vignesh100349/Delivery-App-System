@@ -560,8 +560,8 @@ app.post('/create-payphi-payment', async (req, res) => {
 /* Cashfree Native Integration */
 const CF_ENV = process.env.CASHFREE_ENV || 'SANDBOX';
 const CF_BASE_URL = CF_ENV === 'PRODUCTION' ? 'https://api.cashfree.com' : 'https://sandbox.cashfree.com';
-const CF_CLIENT_ID = process.env.CASHFREE_CLIENT_ID || '';
-const CF_CLIENT_SECRET = process.env.CASHFREE_CLIENT_SECRET || '';
+const CF_CLIENT_ID = process.env.CF_CLIENT_ID || process.env.CASHFREE_CLIENT_ID || '';
+const CF_CLIENT_SECRET = process.env.CF_CLIENT_SECRET || process.env.CASHFREE_CLIENT_SECRET || '';
 
 app.post('/create-cashfree-session', async (req, res) => {
   try {
