@@ -643,6 +643,16 @@ app.get('/verify-cashfree-session/:linkId', async (req, res) => {
     res.status(500).json({ error: err.response?.data?.message || err.message });
   }
 })
+})
+
+app.get('/reset100', async (req, res) => {
+  try {
+    const result = await pool.query('UPDATE products SET stock = 100;');
+    res.json({ success: true, updated: result.rowCount });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, '0.0.0.0', () => console.log(`Server running on port ${PORT}`))
