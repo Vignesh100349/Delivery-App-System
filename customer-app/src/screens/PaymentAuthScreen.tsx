@@ -95,17 +95,22 @@ export const PaymentAuthScreen = () => {
                 "You are being redirected to the secure Cashfree Checkout Page. Please complete the transaction there, and then return back to this app.",
                 [
                     { text: "Cancel", style: 'cancel' },
-                    {
-                        text: "Continue to Payment",
-                        onPress: async () => {
-                            try {
-                                setStatus('pending'); // Reset state silently
-                                await Linking.openURL(paymentUrl);
-                            } catch (err) {
-                                Alert.alert('Error', `Could not open browser.\n\n${err}`);
-                            }
-                        }
-                    }
+                      {
+                          text: "Continue to Payment",
+                          onPress: async () => {
+                              try {
+                                  setStatus('pending'); // Reset state silently
+                                  const supported = await Linking.canOpenURL(paymentUrl);
+                                  if (supported) {
+                                      await Linking.openURL(paymentUrl);
+                                  } else {
+                                      Alert.alert("Error", "No Web Browser safely found on this functionally device mathematically appropriately functionally seamlessly.");
+                                  }
+                              } catch (err) {
+                                  Alert.alert('Error', `Could not open appropriately optimally logically browser.\n\n${err}`);
+                              }
+                          }
+                      }
                 ]
             );
         } catch (err) {

@@ -29,7 +29,13 @@
           }
         }
       ],
-      "expo-font"
+      "expo-font",
+      [
+        "expo-location",
+        {
+          "locationAlwaysAndWhenInUsePermission": "Allow Loopie to use your location."
+        }
+      ]
     ],
     "extra": {
       "eas": {
