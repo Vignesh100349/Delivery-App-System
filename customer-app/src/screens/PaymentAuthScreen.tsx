@@ -57,22 +57,7 @@ export const PaymentAuthScreen = () => {
         }
     };
 
-    const handleMockPayment = () => {
-        setStatus('processing');
-        setTimeout(() => {
-            setStatus('success');
-            setTimeout(() => {
-                finishCheckout();
-            }, 1000);
-        }, 2000);
-    };
-
-    const handleMockFailure = () => {
-        setStatus('processing');
-        setTimeout(() => {
-            setStatus('failed');
-        }, 1500);
-    };
+    // Removed mock payment handlers
 
     const handleLaunchCashfree = async () => {
         try {
@@ -81,14 +66,6 @@ export const PaymentAuthScreen = () => {
                 return;
             }
 
-            if (String(paymentSessionId).startsWith("MOCKLINK_")) {
-                Alert.alert(
-                    "Test Mode Active",
-                    "Cashfree API Keys are currently missing on your Cloud Server. \n\nWe are safely simulating a successful payment natively!",
-                    [{ text: "Simulate Success", onPress: () => handleMockPayment() }]
-                );
-                return;
-            }
 
             Alert.alert(
                 "Leaving App",
@@ -161,17 +138,6 @@ export const PaymentAuthScreen = () => {
                             <Text style={styles.realUpiBtnText}>Manually Verify Status</Text>
                         </TouchableOpacity>
 
-                        {String(paymentSessionId).startsWith("MOCKLINK_") && (
-                            <View style={styles.mockActions}>
-                                <Text style={styles.mockHeader}>-- Simulator Controls (Dev Only) --</Text>
-                                <TouchableOpacity style={styles.mockApproveBtn} onPress={handleMockPayment}>
-                                    <Text style={styles.mockBtnText}>Simulate PIN & Approve</Text>
-                                </TouchableOpacity>
-                                <TouchableOpacity style={styles.mockRejectBtn} onPress={handleMockFailure}>
-                                    <Text style={styles.mockRejectBtnText}>Simulate Reject/Timeout</Text>
-                                </TouchableOpacity>
-                            </View>
-                        )}
                     </View>
                 )}
 
