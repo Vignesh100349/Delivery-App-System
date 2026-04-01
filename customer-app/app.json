@@ -15,7 +15,12 @@
       "package": "com.love.customer",
       "googleServicesFile": "./google-services.json",
       "edgeToEdgeEnabled": true,
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "config": {
+        "googleMaps": {
+          "apiKey": "AIzaSyA_DUMMY_KEY_TO_PREVENT_CRASH_123"
+        }
+      }
     },
     "web": {
       "favicon": "./assets/loopie_icon.png"
