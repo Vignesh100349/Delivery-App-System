@@ -161,15 +161,17 @@ export const PaymentAuthScreen = () => {
                             <Text style={styles.realUpiBtnText}>Manually Verify Status</Text>
                         </TouchableOpacity>
 
-                        <View style={styles.mockActions}>
-                            <Text style={styles.mockHeader}>-- Simulator Controls --</Text>
-                            <TouchableOpacity style={styles.mockApproveBtn} onPress={handleMockPayment}>
-                                <Text style={styles.mockBtnText}>Simulate PIN & Approve</Text>
-                            </TouchableOpacity>
-                            <TouchableOpacity style={styles.mockRejectBtn} onPress={handleMockFailure}>
-                                <Text style={styles.mockRejectBtnText}>Simulate Reject/Timeout</Text>
-                            </TouchableOpacity>
-                        </View>
+                        {String(paymentSessionId).startsWith("MOCKLINK_") && (
+                            <View style={styles.mockActions}>
+                                <Text style={styles.mockHeader}>-- Simulator Controls (Dev Only) --</Text>
+                                <TouchableOpacity style={styles.mockApproveBtn} onPress={handleMockPayment}>
+                                    <Text style={styles.mockBtnText}>Simulate PIN & Approve</Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity style={styles.mockRejectBtn} onPress={handleMockFailure}>
+                                    <Text style={styles.mockRejectBtnText}>Simulate Reject/Timeout</Text>
+                                </TouchableOpacity>
+                            </View>
+                        )}
                     </View>
                 )}
 
