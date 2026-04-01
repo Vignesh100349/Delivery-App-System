@@ -3,8 +3,7 @@ import { View, Text, ScrollView, StyleSheet, TouchableOpacity, Alert, Platform, 
 import { useNavigation } from '@react-navigation/native';
 import { useCartStore } from '../store/useCartStore';
 import * as Location from 'expo-location';
-// MapView disabled to prevent Google Maps API Key crashes natively
-// import MapView, { Marker } from 'react-native-maps';
+import MapView, { Marker } from 'react-native-maps';
 import { Ionicons } from '@expo/vector-icons';
 
 const API_URL = 'https://delivery-app-system.onrender.com';
@@ -164,10 +163,13 @@ export const CartScreen = () => {
 
                     <View style={styles.mapWrapper}>
                         {mapRegion ? (
-                            <View style={[styles.map, { justifyContent: 'center', alignItems: 'center', backgroundColor: '#e2e8f0', borderColor: '#cbd5e1', borderWidth: 1 }]}>
-                                <Ionicons name="location" size={32} color="#0c831f" />
-                                <Text style={{ color: '#0f172a', fontWeight: 'bold' }}>Location Pinned!</Text>
-                            </View>
+                            <MapView
+                                style={styles.map}
+                                region={mapRegion}
+                                onPress={handleMapPress}
+                            >
+                                <Marker coordinate={mapRegion} />
+                            </MapView>
                         ) : (
                             <View style={styles.mapPlaceholder}>
                                 {fetchingLocation ? (
