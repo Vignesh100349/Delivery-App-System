@@ -586,7 +586,7 @@ const crypto = require('crypto');
 const PHONEPE_ENV = process.env.PHONEPE_ENV || 'SANDBOX';
 const PHONEPE_HOST = PHONEPE_ENV === 'PRODUCTION' ? 'https://api.phonepe.com/apis/hermes' : 'https://api-preprod.phonepe.com/apis/pg-sandbox';
 const PHONEPE_MERCHANT_ID = process.env.PHONEPE_MERCHANT_ID || 'M23IR2JCOTX20_2604061039';
-const PHONEPE_SALT_KEY = process.env.PHONEPE_SALT_KEY || 'OTUzNDM4ODgtOGQxYi00MmFlLWFmYTMtZjJlZDIwZDQ3M2Iy';
+const PHONEPE_SALT_KEY = process.env.PHONEPE_SALT_KEY || 'OTUzNDM4ODgtOGQxYi00MmFlLWFmYTMtZjJlZDlmZDQ3M2Iy';
 const PHONEPE_SALT_INDEX = process.env.PHONEPE_SALT_INDEX || '1';
 
 app.post('/create-phonepe-session', async (req, res) => {
