@@ -8,6 +8,7 @@ import Cart from './pages/Cart';
 import Orders from './pages/Orders';
 import Profile from './pages/Profile';
 import AuthModal from './components/AuthModal';
+import { PrivacyPolicy, TermsConditions, RefundPolicy, ContactUs } from './pages/PolicyPages';
 
 const API_URL = 'https://delivery-app-system.onrender.com';
 
@@ -52,18 +53,39 @@ function Navbar() {
   );
 }
 
+function Footer() {
+  return (
+    <footer style={{ marginTop: '60px', padding: '40px 0', borderTop: '1px solid var(--border-light)', backgroundColor: '#fff' }}>
+      <div className="app-container" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '15px' }}>
+        <div style={{ display: 'flex', gap: '25px', flexWrap: 'wrap', justifyContent: 'center' }}>
+          <Link to="/privacy" style={{ color: 'var(--text-muted)', textDecoration: 'none', fontSize: '14px' }}>Privacy Policy</Link>
+          <Link to="/terms" style={{ color: 'var(--text-muted)', textDecoration: 'none', fontSize: '14px' }}>Terms & Conditions</Link>
+          <Link to="/refund" style={{ color: 'var(--text-muted)', textDecoration: 'none', fontSize: '14px' }}>Cancellation & Refund</Link>
+          <Link to="/contact" style={{ color: 'var(--text-muted)', textDecoration: 'none', fontSize: '14px' }}>Contact Us</Link>
+        </div>
+        <p style={{ color: '#aaa', fontSize: '12px' }}>&copy; {new Date().getFullYear()} Loopie Grocery. All rights reserved.</p>
+      </div>
+    </footer>
+  );
+}
+
 function App() {
   return (
     <BrowserRouter>
       <Navbar />
-      <main className="app-container">
+      <main className="app-container" style={{ minHeight: '60vh' }}>
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/cart" element={<Cart />} />
           <Route path="/orders" element={<Orders />} />
           <Route path="/profile" element={<Profile />} />
+          <Route path="/privacy" element={<PrivacyPolicy />} />
+          <Route path="/terms" element={<TermsConditions />} />
+          <Route path="/refund" element={<RefundPolicy />} />
+          <Route path="/contact" element={<ContactUs />} />
         </Routes>
       </main>
+      <Footer />
     </BrowserRouter>
   );
 }
