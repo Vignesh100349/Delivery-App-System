@@ -1,5 +1,6 @@
+import { SafeAreaView } from 'react-native-safe-area-context';
 import React from 'react';
-import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, ScrollView, Linking } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Linking } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 
@@ -7,7 +8,7 @@ export const HelpSupportScreen = () => {
     const navigation = useNavigation<any>();
 
     const openWhatsApp = () => {
-        Linking.openURL('https://wa.me/919876543210');
+        Linking.openURL('https://wa.me/916381449476');
     };
     
     const openEmail = () => {
@@ -82,8 +83,7 @@ export const HelpSupportScreen = () => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#f4f4f4',
-    },
+        backgroundColor: '#f4f4f4'},
     header: {
         flexDirection: 'row',
         alignItems: 'center',
@@ -91,32 +91,26 @@ const styles = StyleSheet.create({
         backgroundColor: '#fff',
         borderBottomWidth: 1,
         borderBottomColor: '#eee',
-        elevation: 1,
-    },
+        elevation: 1},
     backBtn: {
-        marginRight: 15,
-    },
+        marginRight: 15},
     headerTitle: {
         fontSize: 18,
         fontWeight: 'bold',
-        color: '#111',
-    },
+        color: '#111'},
     content: {
-        paddingTop: 0,
-    },
+        paddingTop: 0},
     heroSection: {
         backgroundColor: '#fff',
         alignItems: 'center',
         paddingVertical: 30,
-        marginBottom: 10,
-    },
+        marginBottom: 10},
     heroText: {
         marginTop: 15,
         fontSize: 20,
         fontWeight: '900',
         color: '#222',
-        letterSpacing: 0.5,
-    },
+        letterSpacing: 0.5},
     sectionHeader: {
         paddingHorizontal: 20,
         paddingBottom: 10,
@@ -124,8 +118,7 @@ const styles = StyleSheet.create({
         fontSize: 12,
         fontWeight: 'bold',
         color: '#888',
-        letterSpacing: 1,
-    },
+        letterSpacing: 1},
     actionRow: {
         flexDirection: 'row',
         alignItems: 'center',
@@ -133,8 +126,7 @@ const styles = StyleSheet.create({
         paddingVertical: 14,
         paddingHorizontal: 20,
         borderBottomWidth: 1,
-        borderBottomColor: '#eee',
-    },
+        borderBottomColor: '#eee'},
     iconCircle: {
         backgroundColor: '#0c831f',
         width: 36,
@@ -142,14 +134,12 @@ const styles = StyleSheet.create({
         borderRadius: 18,
         justifyContent: 'center',
         alignItems: 'center',
-        marginRight: 16,
-    },
+        marginRight: 16},
     actionLabel: {
         flex: 1,
         fontSize: 16,
         color: '#333',
-        fontWeight: '500',
-    },
+        fontWeight: '500'},
     contactCard: {
         flexDirection: 'row',
         alignItems: 'center',
@@ -162,19 +152,15 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.05,
         shadowRadius: 5,
         shadowOffset: { width: 0, height: 2 },
-        elevation: 2,
-    },
+        elevation: 2},
     contactInfo: {
-        marginLeft: 15,
-    },
+        marginLeft: 15},
     contactTitle: {
         fontSize: 16,
         fontWeight: 'bold',
         color: '#222',
-        marginBottom: 2,
-    },
+        marginBottom: 2},
     contactSub: {
         fontSize: 13,
-        color: '#666',
-    }
+        color: '#666'}
 });

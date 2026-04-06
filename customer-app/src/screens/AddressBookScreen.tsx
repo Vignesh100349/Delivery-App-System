@@ -1,5 +1,6 @@
+import { SafeAreaView } from 'react-native-safe-area-context';
 import React from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, SafeAreaView } from 'react-native';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity} from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import { useCartStore } from '../store/useCartStore';
@@ -63,27 +64,22 @@ export const AddressBookScreen = () => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#f4f4f4',
-    },
+        backgroundColor: '#f4f4f4'},
     header: {
         flexDirection: 'row',
         alignItems: 'center',
         padding: 15,
         backgroundColor: '#fff',
         borderBottomWidth: 1,
-        borderBottomColor: '#eee',
-    },
+        borderBottomColor: '#eee'},
     backBtn: {
-        marginRight: 15,
-    },
+        marginRight: 15},
     headerTitle: {
         fontSize: 18,
         fontWeight: 'bold',
-        color: '#111',
-    },
+        color: '#111'},
     content: {
-        padding: 15,
-    },
+        padding: 15},
     addNewBtn: {
         flexDirection: 'row',
         alignItems: 'center',
@@ -93,14 +89,12 @@ const styles = StyleSheet.create({
         marginBottom: 20,
         borderWidth: 1,
         borderColor: '#0c831f',
-        borderStyle: 'dashed',
-    },
+        borderStyle: 'dashed'},
     addNewText: {
         marginLeft: 10,
         color: '#0c831f',
         fontWeight: 'bold',
-        fontSize: 15,
-    },
+        fontSize: 15},
     addressCard: {
         backgroundColor: '#fff',
         padding: 15,
@@ -109,40 +103,33 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.05,
         shadowRadius: 5,
         shadowOffset: { width: 0, height: 2 },
-        elevation: 2,
-    },
+        elevation: 2},
     addressHeader: {
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-        marginBottom: 10,
-    },
+        marginBottom: 10},
     tagContainer: {
         flexDirection: 'row',
         alignItems: 'center',
         backgroundColor: '#f0f0f0',
         paddingHorizontal: 8,
         paddingVertical: 4,
-        borderRadius: 12,
-    },
+        borderRadius: 12},
     tagText: {
         marginLeft: 5,
         fontSize: 12,
         fontWeight: 'bold',
-        color: '#333',
-    },
+        color: '#333'},
     addressText: {
         fontSize: 14,
         color: '#555',
-        lineHeight: 20,
-    },
+        lineHeight: 20},
     emptyContainer: {
         alignItems: 'center',
-        marginTop: 50,
-    },
+        marginTop: 50},
     emptyText: {
         marginTop: 15,
         fontSize: 16,
-        color: '#888',
-    }
+        color: '#888'}
 });

@@ -1,5 +1,6 @@
+import { SafeAreaView } from 'react-native-safe-area-context';
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, SafeAreaView, KeyboardAvoidingView, Platform, Alert, ActivityIndicator, Image } from 'react-native';
+import { View, Text, StyleSheet, TextInput, TouchableOpacity, KeyboardAvoidingView, Platform, Alert, ActivityIndicator, Image } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import axios from 'axios';
 import { useAuthStore } from '../store/useAuthStore';
@@ -116,41 +117,33 @@ export const LoginScreen = () => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#050505',
-    },
+        backgroundColor: '#050505'},
     keyboardView: {
-        flex: 1,
-    },
+        flex: 1},
     content: {
         flex: 1,
         justifyContent: 'center',
-        paddingHorizontal: 25,
-    },
+        paddingHorizontal: 25},
     headerContainer: {
         alignItems: 'center',
-        marginBottom: 40,
-    },
+        marginBottom: 40},
     logoImage: {
         width: 140,
         height: 140,
-        marginBottom: 10,
-    },
+        marginBottom: 10},
     title: {
         fontSize: 28,
         fontWeight: '900',
         color: '#fff',
-        marginBottom: 5,
-    },
+        marginBottom: 5},
     subtitle: {
         fontSize: 15,
         color: '#aaa',
         textAlign: 'center',
         lineHeight: 22,
-        paddingHorizontal: 20,
-    },
+        paddingHorizontal: 20},
     form: {
-        width: '100%',
-    },
+        width: '100%'},
     input: {
         height: 55,
         borderWidth: 1,
@@ -160,8 +153,7 @@ const styles = StyleSheet.create({
         fontSize: 16,
         marginBottom: 15,
         backgroundColor: '#111',
-        color: '#fff',
-    },
+        color: '#fff'},
     authBtn: {
         backgroundColor: '#0c831f', // Blinkit green
         height: 55,
@@ -172,22 +164,18 @@ const styles = StyleSheet.create({
         shadowColor: '#0c831f',
         shadowOpacity: 0.3,
         shadowRadius: 5,
-        shadowOffset: { width: 0, height: 2 },
-    },
+        shadowOffset: { width: 0, height: 2 }},
     authBtnText: {
         color: '#fff',
         fontSize: 18,
         fontWeight: 'bold',
-        letterSpacing: 0.5,
-    },
+        letterSpacing: 0.5},
     toggleBtn: {
         marginTop: 20,
         padding: 10,
-        alignItems: 'center',
-    },
+        alignItems: 'center'},
     toggleBtnText: {
         color: '#28bb41',
         fontSize: 15,
-        fontWeight: '600',
-    }
+        fontWeight: '600'}
 });

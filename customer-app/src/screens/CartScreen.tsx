@@ -5,6 +5,7 @@ import { useCartStore } from '../store/useCartStore';
 import * as Location from 'expo-location';
 import MapView, { Marker } from 'react-native-maps';
 import { Ionicons } from '@expo/vector-icons';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const API_URL = 'https://delivery-app-system.onrender.com';
 
@@ -101,7 +102,26 @@ export const CartScreen = () => {
     const fullAddressString = getAddressStrings().filter(Boolean).join(', ');
 
     const total = cartTotal();
-    const deliveryFee = 0; // Force free delivery
+    
+    // Calculate Haversine distance from Viswanatham Rotary School
+    const calculateDistance = () => {
+        if (!deliveryAddressDetails.latitude || !deliveryAddressDetails.longitude) return 0;
+        const STORE_LAT = 9.4358; 
+        const STORE_LON = 77.8083;
+        const userLat = deliveryAddressDetails.latitude;
+        const userLon = deliveryAddressDetails.longitude;
+        
+        const R = 6371; // Earth radius km
+        const dLat = (userLat - STORE_LAT) * Math.PI / 180;
+        const dLon = (userLon - STORE_LON) * Math.PI / 180;
+        const a = Math.sin(dLat/2) * Math.sin(dLat/2) + Math.cos(STORE_LAT * Math.PI / 180) * Math.cos(userLat * Math.PI / 180) * Math.sin(dLon/2) * Math.sin(dLon/2);
+        return R * (2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)));
+    };
+
+    const distance = calculateDistance();
+    // Delivery fee logic: ₹15 base charge up to 2km, ₹5 per additional km
+    const deliveryFee = distance > 0 ? (distance <= 2 ? 15 : 15 + Math.ceil(distance - 2) * 5) : 0;
+    
     const grandTotal = total + deliveryFee;
 
     const handleCheckout = () => {
@@ -115,17 +135,17 @@ export const CartScreen = () => {
 
     if (cartCount() === 0) {
         return (
-            <View style={styles.emptyContainer}>
+            <SafeAreaView style={styles.emptyContainer} edges={['bottom', 'left', 'right']}>
                 <Text style={styles.emptyText}>Your cart is empty</Text>
                 <TouchableOpacity style={styles.startShoppingBtn} onPress={() => navigation.navigate('HomeTab')}>
                     <Text style={styles.startShoppingBtnText}>Browse Products</Text>
                 </TouchableOpacity>
-            </View>
+            </SafeAreaView>
         );
     }
 
     return (
-        <View style={styles.container}>
+        <SafeAreaView style={styles.container} edges={['bottom', 'left', 'right']}>
             <ScrollView contentContainerStyle={{ padding: 15 }}>
 
                 {/* Cart Items List */}
@@ -266,7 +286,7 @@ export const CartScreen = () => {
                     <Text style={styles.payBtnText}>{loading ? 'Processing...' : 'Place Order'}</Text>
                 </TouchableOpacity>
             </View>
-        </View>
+        </SafeAreaView>
     );
 };
 

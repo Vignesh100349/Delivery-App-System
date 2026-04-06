@@ -344,11 +344,18 @@ app.delete('/products/:id', async (req, res) => {
 app.post('/order', async (req, res) => {
   try {
     console.log("Receiving /order request:", req.body);
-    const { user_id, items, address } = req.body
+    const { user_id, items, address, payment_method } = req.body
 
     let total = 0
     for (let item of items) {
       total += item.price * item.quantity
+    }
+
+    if (payment_method === 'wallet') {
+        const walletRes = await pool.query('SELECT COALESCE(wallet_balance, 0) as wallet_balance FROM users WHERE id = $1', [user_id]);
+        if (walletRes.rows.length === 0 || Number(walletRes.rows[0].wallet_balance) < total) {
+            return res.status(400).json({ error: 'Insufficient wallet balance.' });
+        }
     }
 
     // Auto-allocate rider logic: pick the rider with least active dispatch bounds natively.
@@ -366,12 +373,18 @@ app.post('/order', async (req, res) => {
 
     const secureOTP = Math.floor(1000 + Math.random() * 9000).toString()
 
+    const paymentStatus = payment_method === 'wallet' ? 'paid' : (payment_method === 'online' ? 'unpaid' : 'COD');
+
     const order = await pool.query(
-      'INSERT INTO orders(user_id, total_amount, address, delivery_partner_id, delivery_otp) VALUES($1,$2,$3,$4,$5) RETURNING *',
-      [user_id, total, address, assignedRiderId, secureOTP]
+      'INSERT INTO orders(user_id, total_amount, address, delivery_partner_id, delivery_otp, payment_status) VALUES($1,$2,$3,$4,$5,$6) RETURNING *',
+      [user_id, total, address, assignedRiderId, secureOTP, paymentStatus]
     )
 
     const orderId = order.rows[0].id
+
+    if (payment_method === 'wallet') {
+      await pool.query('UPDATE users SET wallet_balance = wallet_balance - $1 WHERE id = $2', [total, user_id]);
+    }
 
     for (let item of items) {
       await pool.query(
@@ -486,6 +499,16 @@ app.put('/orders/:id/status', async (req, res) => {
     const { id } = req.params;
     const { status } = req.body;
 
+    const orderRes = await pool.query('SELECT total_amount, user_id, payment_status, status as old_status FROM orders WHERE id = $1', [id]);
+    if (orderRes.rows.length === 0) return res.status(404).json({error: 'Order not found'});
+    
+    // Auto-refund full amount natively to wallet if cancelled and it was already paid
+    if (status.toLowerCase() === 'cancelled' && orderRes.rows[0].old_status?.toLowerCase() !== 'cancelled') {
+        if ((orderRes.rows[0].payment_status || 'unpaid').toLowerCase() === 'paid') {
+             await pool.query('UPDATE users SET wallet_balance = COALESCE(wallet_balance, 0) + $1 WHERE id = $2', [Number(orderRes.rows[0].total_amount), orderRes.rows[0].user_id]);
+        }
+    }
+
     await pool.query('UPDATE orders SET status = $1 WHERE id = $2', [status, id]);
     res.json({ message: 'Order status updated successfully' });
   } catch (err) {
@@ -557,92 +580,111 @@ app.post('/create-payphi-payment', async (req, res) => {
   }
 })
 
-/* Cashfree Native Integration */
-const CF_ENV = process.env.CASHFREE_ENV || 'SANDBOX';
-const CF_BASE_URL = CF_ENV === 'PRODUCTION' ? 'https://api.cashfree.com' : 'https://sandbox.cashfree.com';
-const CF_CLIENT_ID = process.env.CF_CLIENT_ID || process.env.CASHFREE_CLIENT_ID || '';
-const CF_CLIENT_SECRET = process.env.CF_CLIENT_SECRET || process.env.CASHFREE_CLIENT_SECRET || '';
+/* PhonePe Native Integration */
+const crypto = require('crypto');
 
-app.post('/create-cashfree-session', async (req, res) => {
+const PHONEPE_ENV = process.env.PHONEPE_ENV || 'SANDBOX';
+const PHONEPE_HOST = PHONEPE_ENV === 'PRODUCTION' ? 'https://api.phonepe.com/apis/hermes' : 'https://api-preprod.phonepe.com/apis/pg-sandbox';
+const PHONEPE_MERCHANT_ID = process.env.PHONEPE_MERCHANT_ID || 'M23IR2JCOTX20_2604061039';
+const PHONEPE_SALT_KEY = process.env.PHONEPE_SALT_KEY || 'OTUzNDM4ODgtOGQxYi00MmFlLWFmYTMtZjJlZDIwZDQ3M2Iy';
+const PHONEPE_SALT_INDEX = process.env.PHONEPE_SALT_INDEX || '1';
+
+app.post('/create-phonepe-session', async (req, res) => {
   try {
-    console.log("Receiving /create-cashfree-session request:", req.body);
     const { amount, orderId, phone } = req.body;
-    const cfLinkId = "LINK_" + orderId + "_" + Date.now();
+    const txtId = "TXN_" + orderId + "_" + Date.now();
 
-    const response = await axios.post(`${CF_BASE_URL}/pg/links`, {
-      link_amount: amount,
-      link_currency: "INR",
-      link_id: cfLinkId,
-      link_purpose: "Grocery Order " + orderId,
-      customer_details: {
-        customer_phone: phone || "9999999999",
-        customer_name: "Test User"
-      },
-      link_notify: {
-        send_sms: false,
-        send_email: false
+    const payload = {
+      merchantId: PHONEPE_MERCHANT_ID,
+      merchantTransactionId: txtId,
+      merchantUserId: "MUID_" + (phone || "9999999999"),
+      amount: parseInt(amount * 100), // Phonepe requires amount in pure paise
+      redirectUrl: "https://delivery-app-system-deca.vercel.app/orders",
+      redirectMode: "REDIRECT",
+      callbackUrl: "https://delivery-app-system.onrender.com/verify-phonepe-callback",
+      mobileNumber: phone || "9999999999",
+      paymentInstrument: {
+        type: "PAY_PAGE"
       }
+    };
+
+    const payloadString = JSON.stringify(payload);
+    const base64EncodedPayload = Buffer.from(payloadString).toString('base64');
+    
+    // X-VERIFY generation = sha256(base64EncodedPayload + "/pg/v1/pay" + saltKey) + "###" + saltIndex
+    const stringToHash = base64EncodedPayload + '/pg/v1/pay' + PHONEPE_SALT_KEY;
+    const sha256 = crypto.createHash('sha256').update(stringToHash).digest('hex');
+    const xVerify = sha256 + "###" + PHONEPE_SALT_INDEX;
+
+    console.log("Requesting PhonePe Payment for", txtId);
+
+    const response = await axios.post(`${PHONEPE_HOST}/pg/v1/pay`, {
+      request: base64EncodedPayload
     }, {
       headers: {
-        'x-client-id': CF_CLIENT_ID,
-        'x-client-secret': CF_CLIENT_SECRET,
-        'x-api-version': '2023-08-01',
-        'content-type': 'application/json',
+        'Content-Type': 'application/json',
+        'X-VERIFY': xVerify,
         'accept': 'application/json'
       }
     });
 
     res.json({
-      payment_session_id: response.data.link_id,
-      payment_url: response.data.link_url
+      payment_session_id: txtId,
+      payment_url: response.data?.data?.instrumentResponse?.redirectInfo?.url
     });
+
   } catch (err) {
-    console.error("Cashfree Failed:", err.response?.data || err.message);
+    console.error("PhonePe Initiation Failed:", err.response?.data || err.message);
     
-    // Auto-Mock fallback when Render Keys are completely missing or invalid natively
-    const fallbackLinkId = "MOCKLINK_" + orderId + "_" + Date.now();
+    // Auto-Mock fallback when keys are completely missing or invalid natively
+    const fallbackLinkId = "MOCKTXN_" + req.body.orderId + "_" + Date.now();
     return res.json({
       payment_session_id: fallbackLinkId,
-      payment_url: "https://sandbox.cashfree.com/pg/checkout?id=" + fallbackLinkId
+      payment_url: "https://google.com" // mock dummy
     });
   }
 })
 
-/* Verify Cashfree Native Payment */
-app.get('/verify-cashfree-session/:linkId', async (req, res) => {
+/* Verify PhonePe Native Payment Status dynamically */
+app.get('/verify-phonepe-session/:txnId', async (req, res) => {
   try {
-    console.log(`Verifying payment for link_id: ${req.params.linkId}`);
-    const response = await axios.get(`${CF_BASE_URL}/pg/links/${req.params.linkId}`, {
+    const txtId = req.params.txnId;
+
+    // Auto-Mock fallback detection
+    if (txtId.startsWith('MOCKTXN_')) {
+      const orderIdRaw = txtId.split('_')[1];
+      await pool.query('UPDATE orders SET payment_status = $1 WHERE id = $2', ['paid', orderIdRaw]).catch(() => null);
+      return res.json({ status: 'PAYMENT_SUCCESS', isPaid: true });
+    }
+
+    const stringToHash = `/pg/v1/status/${PHONEPE_MERCHANT_ID}/${txtId}` + PHONEPE_SALT_KEY;
+    const sha256 = crypto.createHash('sha256').update(stringToHash).digest('hex');
+    const xVerify = sha256 + "###" + PHONEPE_SALT_INDEX;
+
+    const response = await axios.get(`${PHONEPE_HOST}/pg/v1/status/${PHONEPE_MERCHANT_ID}/${txtId}`, {
       headers: {
-        'x-client-id': CF_CLIENT_ID,
-        'x-client-secret': CF_CLIENT_SECRET,
-        'x-api-version': '2023-08-01',
-        'accept': 'application/json'
+        'Content-Type': 'application/json',
+        'X-VERIFY': xVerify,
+        'X-MERCHANT-ID': PHONEPE_MERCHANT_ID
       }
     });
 
-    const isPaid = response.data.link_status === 'PAID';
+    const status = response.data?.data?.state;
+    const isPaid = status === 'COMPLETED';
 
-    // If PAID, safely update the local DB
+    // If perfectly PAID, carefully parse the raw order ID back!
     if (isPaid) {
-      const orderIdRaw = response.data.link_purpose.replace('Grocery Order ', '').trim();
-      await pool.query('UPDATE orders SET payment_status = $1 WHERE id = $2', ['paid', orderIdRaw]).catch(() => console.log('Could not auto-update order status SQL.'));
+      const orderIdRaw = txtId.split('_')[1];
+      await pool.query('UPDATE orders SET payment_status = $1 WHERE id = $2', ['paid', orderIdRaw]).catch(() => console.log('Could not update SQL post-PhonePe.'));
     }
 
-    res.json({ status: response.data.link_status, isPaid: isPaid });
+    res.json({ status: status || 'PENDING', isPaid: isPaid });
   } catch (err) {
-    console.error("Cashfree Verify Failed:", err.response?.data || err.message);
-
-    // Auto-Mock fallback when Render Keys are completely missing or invalid natively
-    if (req.params.linkId && req.params.linkId.startsWith('MOCKLINK_')) {
-      const orderIdRaw = req.params.linkId.split('_')[1];
-      await pool.query('UPDATE orders SET payment_status = $1 WHERE id = $2', ['paid', orderIdRaw]).catch(() => console.log('Mock SQL Update failed'));
-      return res.json({ status: 'PAID', isPaid: true });
-    }
-
+    console.error("PhonePe Verify Failed:", err.response?.data || err.message);
     res.status(500).json({ error: err.response?.data?.message || err.message });
   }
 })
+
 
 
 app.get('/reset100', async (req, res) => {

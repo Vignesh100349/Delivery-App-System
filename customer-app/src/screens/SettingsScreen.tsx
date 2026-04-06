@@ -1,5 +1,6 @@
+import { SafeAreaView } from 'react-native-safe-area-context';
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, Switch, SafeAreaView, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, StyleSheet, Switch, TouchableOpacity, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import { useAuthStore } from '../store/useAuthStore';
@@ -94,35 +95,29 @@ export const SettingsScreen = () => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#f4f4f4',
-    },
+        backgroundColor: '#f4f4f4'},
     header: {
         flexDirection: 'row',
         alignItems: 'center',
         padding: 15,
         backgroundColor: '#fff',
         borderBottomWidth: 1,
-        borderBottomColor: '#eee',
-    },
+        borderBottomColor: '#eee'},
     backBtn: {
-        marginRight: 15,
-    },
+        marginRight: 15},
     headerTitle: {
         fontSize: 18,
         fontWeight: 'bold',
-        color: '#111',
-    },
+        color: '#111'},
     content: {
-        marginTop: 15,
-    },
+        marginTop: 15},
     sectionHeader: {
         paddingHorizontal: 15,
         paddingBottom: 10,
         fontSize: 13,
         fontWeight: 'bold',
         color: '#888',
-        marginTop: 10,
-    },
+        marginTop: 10},
     settingRow: {
         flexDirection: 'row',
         alignItems: 'center',
@@ -130,16 +125,13 @@ const styles = StyleSheet.create({
         paddingVertical: 12,
         paddingHorizontal: 15,
         borderBottomWidth: 1,
-        borderBottomColor: '#eee',
-    },
+        borderBottomColor: '#eee'},
     icon: {
-        marginRight: 15,
-    },
+        marginRight: 15},
     settingLabel: {
         flex: 1,
         fontSize: 15,
-        color: '#333',
-    },
+        color: '#333'},
     actionRow: {
         flexDirection: 'row',
         alignItems: 'center',
@@ -147,11 +139,9 @@ const styles = StyleSheet.create({
         paddingVertical: 16,
         paddingHorizontal: 15,
         borderBottomWidth: 1,
-        borderBottomColor: '#eee',
-    },
+        borderBottomColor: '#eee'},
     actionLabel: {
         flex: 1,
         fontSize: 15,
-        color: '#333',
-    }
+        color: '#333'}
 });

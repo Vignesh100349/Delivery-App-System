@@ -38,11 +38,25 @@ function Cart() {
                     price: item.price
                 }))
             };
-
             const res = await axios.post(`${API_URL}/order`, orderPayload);
-            alert(`Order #${res.data.orderId} Placed successfully!`);
-            clearCart();
-            navigate('/orders');
+
+            if (paymentMethod === 'online') {
+                const phonepeRes = await axios.post(`${API_URL}/create-phonepe-session`, {
+                    amount: grandTotal,
+                    orderId: res.data.orderId,
+                    phone: user.phone || "9999999999"
+                });
+                if (phonepeRes.data.payment_url) {
+                    window.location.href = phonepeRes.data.payment_url;
+                    return;
+                } else {
+                    alert("Issue launching PhonePe Gateway");
+                }
+            } else {
+                alert(`Order #${res.data.orderId} Placed successfully!`);
+                clearCart();
+                navigate('/orders');
+            }
         } catch (err) {
             alert(`Checkout Error: ${err.response?.data?.error || err.message}`);
         } finally {

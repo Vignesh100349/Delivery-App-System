@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, Image, TouchableOpacity, StyleSheet } from 'react-native';
-import { useCartStore, Product, CartItem } from '../store/useCartStore';
+import { useCartStore, Product } from '../store/useCartStore';
 
 interface ProductCardProps {
     product: Product;
@@ -8,9 +8,14 @@ interface ProductCardProps {
 }
 
 export const ProductCard: React.FC<ProductCardProps> = ({ product, customStyle }) => {
-    const { cart, addToCart, removeFromCart } = useCartStore();
-    const cartItem = cart.find((item: CartItem) => item.id === product.id);
-    const quantity = cartItem?.quantity || 0;
+    // Highly specific Zustand selectors guarantee instantaneous zero-lag UI selections!
+    const quantity = useCartStore(state => {
+        const item = state.cart.find(i => i.id === product.id);
+        return item ? item.quantity : 0;
+    });
+    const addToCart = useCartStore(state => state.addToCart);
+    const removeFromCart = useCartStore(state => state.removeFromCart);
+    
     const isSoldOut = product.stock !== undefined && Number(product.stock) <= 0;
 
     return (

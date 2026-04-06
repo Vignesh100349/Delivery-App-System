@@ -1,5 +1,6 @@
+import { SafeAreaView } from 'react-native-safe-area-context';
 import React, { useState, useEffect } from 'react';
-import { View, Text, ScrollView, StyleSheet, TouchableOpacity, SafeAreaView, Platform, StatusBar } from 'react-native';
+import { View, Text, ScrollView, StyleSheet, TouchableOpacity, Platform, StatusBar } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 
 const MAIN_CATEGORIES = [
@@ -157,42 +158,35 @@ const styles = StyleSheet.create({
     safeArea: {
         flex: 1,
         backgroundColor: '#fff',
-        paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0,
-    },
+        },
     header: {
         padding: 15,
         backgroundColor: '#fff',
         borderBottomWidth: 1,
         borderBottomColor: '#eee',
-        alignItems: 'center',
-    },
+        alignItems: 'center'},
     headerTitle: {
         fontSize: 18,
         fontWeight: 'bold',
         color: '#111',
-        textAlign: 'center',
-    },
+        textAlign: 'center'},
     container: {
         flex: 1,
-        flexDirection: 'row',
-    },
+        flexDirection: 'row'},
     sidebar: {
         width: 100,
         backgroundColor: '#f8f8f8',
         borderRightWidth: 1,
-        borderRightColor: '#f0f0f0',
-    },
+        borderRightColor: '#f0f0f0'},
     sidebarItem: {
         paddingVertical: 18,
         paddingHorizontal: 8,
         flexDirection: 'row',
         alignItems: 'center',
         borderBottomWidth: 1,
-        borderBottomColor: '#f0f0f0',
-    },
+        borderBottomColor: '#f0f0f0'},
     sidebarItemSelected: {
-        backgroundColor: '#fff',
-    },
+        backgroundColor: '#fff'},
     selectionIndicator: {
         position: 'absolute',
         left: 0,
@@ -201,8 +195,7 @@ const styles = StyleSheet.create({
         width: 4,
         backgroundColor: 'transparent',
         borderTopRightRadius: 4,
-        borderBottomRightRadius: 4,
-    },
+        borderBottomRightRadius: 4},
     selectionIndicatorActive: {
         backgroundColor: '#0c831f', // Blinkit green
     },
@@ -211,22 +204,18 @@ const styles = StyleSheet.create({
         color: '#666',
         marginLeft: 8,
         flex: 1,
-        textAlign: 'center',
-    },
+        textAlign: 'center'},
     sidebarTextSelected: {
         color: '#0c831f',
-        fontWeight: 'bold',
-    },
+        fontWeight: 'bold'},
     contentArea: {
         flex: 1,
-        backgroundColor: '#fff',
-    },
+        backgroundColor: '#fff'},
     subCategoryGrid: {
         flexDirection: 'row',
         flexWrap: 'wrap',
         padding: 10,
-        justifyContent: 'space-between',
-    },
+        justifyContent: 'space-between'},
     subCategoryCard: {
         width: '48%',
         backgroundColor: '#fefefe',
@@ -240,8 +229,7 @@ const styles = StyleSheet.create({
         shadowColor: '#000', // subtle shadow for ios
         shadowOffset: { width: 0, height: 1 },
         shadowOpacity: 0.05,
-        shadowRadius: 2,
-    },
+        shadowRadius: 2},
     subCategoryEmojiContainer: {
         width: 60,
         height: 60,
@@ -249,27 +237,22 @@ const styles = StyleSheet.create({
         borderRadius: 30,
         justifyContent: 'center',
         alignItems: 'center',
-        marginBottom: 10,
-    },
+        marginBottom: 10},
     subCategoryEmoji: {
-        fontSize: 30,
-    },
+        fontSize: 30},
     subCategoryName: {
         fontSize: 13,
         fontWeight: '600',
         color: '#333',
-        textAlign: 'center',
-    },
+        textAlign: 'center'},
     emptyContent: {
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        height: 300,
-    },
+        height: 300},
     emptyText: {
         color: '#888',
         fontSize: 14,
         textAlign: 'center',
-        paddingHorizontal: 20,
-    }
+        paddingHorizontal: 20}
 });

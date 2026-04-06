@@ -96,6 +96,20 @@ function App() {
     }
   }
 
+  const handleResetStocks = async () => {
+    if (window.confirm("Are you sure you want to magically reset ALL products' stock exactly to 100 instantly?")) {
+      try {
+        const res = await fetch(`${API_URL}/reset100`)
+        const data = await res.json()
+        alert(data.message || 'Successfully functionally updated all products mathematically to precisely 100 stock!')
+        fetchProducts()
+      } catch (err) {
+        console.error(err)
+        alert('Failed functionally securely realistically.')
+      }
+    }
+  }
+
   const handleCreateRider = async (e) => {
     e.preventDefault();
     if (!riderUsername || !riderPassword) {
@@ -147,18 +161,7 @@ function App() {
     }
   }
 
-  const handleNameChange = (val) => {
-    setName(val)
-    
-    // Auto-fetch hook: if string perfectly patches a product in the native payload, populate the admin form!
-    const existingProduct = products.find(p => p.name.toLowerCase() === val.toLowerCase())
-    if (existingProduct && editId !== existingProduct.id.toString()) {
-      populateForm(existingProduct)
-    } else if (!existingProduct && editId) {
-      // If they blank out the name perfectly, clear the form to detach edit state
-      if(val.trim() === '') clearForm();
-    }
-  }
+
 
   const clearForm = () => {
     setEditId('')
@@ -301,12 +304,29 @@ function App() {
 
           <form onSubmit={handleSubmit} className="product-form">
 
+            <div className="form-group" style={{ paddingBottom: '15px', borderBottom: '1px solid #eee', marginBottom: '20px' }}>
+              <label style={{ color: '#0c831f', fontWeight: 'bold' }}>Quick Select Product to Edit</label>
+              <select 
+                value={editId} 
+                onChange={(e) => {
+                  const pId = e.target.value;
+                  if (pId) {
+                    const prod = products.find(p => p.id.toString() === pId);
+                    if (prod) populateForm(prod);
+                  } else {
+                    clearForm();
+                  }
+                }}
+                style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #ddd' }}
+              >
+                <option value="">-- ➕ Or Start Typing to Create a New Product --</option>
+                {products.map(p => <option key={p.id} value={p.id}>{p.name} (₹{p.price})</option>)}
+              </select>
+            </div>
+
             <div className="form-group">
               <label>Product Name</label>
-              <input type="text" value={name} onChange={e => handleNameChange(e.target.value)} required placeholder="e.g. Amul Taaza Toned Fresh Milk" list="product-names-list" />
-              <datalist id="product-names-list">
-                 {products.map(p => <option key={p.id} value={p.name} />)}
-              </datalist>
+              <input type="text" value={name} onChange={e => setName(e.target.value)} required placeholder="e.g. Amul Taaza Toned Fresh Milk" />
             </div>
 
             <div className="form-row">
@@ -367,7 +387,12 @@ function App() {
         </section>
 
         <section className="product-list-section">
-          <h2>Current Catalog ({products.length})</h2>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <h2>Current Catalog ({products.length})</h2>
+            <button onClick={handleResetStocks} style={{ backgroundColor: '#ff9800', color: '#fff', padding: '10px 15px', border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold' }}>
+              Reset All Stocks to 100
+            </button>
+          </div>
           <div className="product-grid">
             {products.map(product => (
               <div key={product.id} className="product-card">

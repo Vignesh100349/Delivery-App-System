@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { View, Text, StyleSheet, ScrollView, ActivityIndicator, Image, TouchableOpacity, Alert, Linking } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import axios from 'axios';
 import { useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
@@ -18,13 +19,12 @@ export const OrdersScreen = () => {
         fetchOrders();
         const poller = setInterval(() => { fetchOrders(true); }, 10000);
         return () => clearInterval(poller);
-    }, []);
+    }, [user?.id]);
 
     const fetchOrders = async (isBackground = false) => {
         try {
-            if (!user?.id) return; // Prevent anonymous array overlaps
-            
-            const res = await axios.get(`${API_URL}/customer/orders/${user.id}`);
+            const fetchedUserId = user?.id || 1;
+            const res = await axios.get(`${API_URL}/customer/orders/${fetchedUserId}`);
             const myOrders = res.data;
 
             if (Array.isArray(myOrders)) {
@@ -34,7 +34,7 @@ export const OrdersScreen = () => {
                     myOrders.forEach(newO => {
                         const oldO = ordersRef.current.find(o => o.id === newO.id);
                         if (oldO && oldO.status !== newO.status) {
-                            Alert.alert('🔔 Delivery Alert', `Your Order #${newO.id} status is now: ${newO.status?.toUpperCase()}`);
+                             Alert.alert('🔔 Delivery Alert', `Your Order #${newO.id} status is now: ${newO.status?.toUpperCase()}`);
                         }
                     });
                 }
@@ -51,26 +51,26 @@ export const OrdersScreen = () => {
 
     if (loading) {
         return (
-            <View style={styles.center}>
+            <SafeAreaView style={styles.center}>
                 <ActivityIndicator size="large" color="#0c831f" />
-            </View>
+            </SafeAreaView>
         );
     }
 
     if (orders.length === 0) {
         return (
-            <View style={styles.center}>
+            <SafeAreaView style={styles.center} edges={['bottom', 'left', 'right']}>
                 <Ionicons name="receipt-outline" size={60} color="#ccc" />
                 <Text style={styles.emptyText}>No Orders Found</Text>
                 <TouchableOpacity onPress={() => navigation.navigate("Main")} style={styles.browseBtn}>
                     <Text style={styles.browseBtnText}>Start Shopping</Text>
                 </TouchableOpacity>
-            </View>
+            </SafeAreaView>
         );
     }
 
     return (
-        <View style={styles.container}>
+        <SafeAreaView style={styles.container} edges={['bottom', 'left', 'right']}>
             <ScrollView contentContainerStyle={styles.scroll}>
                 {orders.map((order) => (
                     <View key={order.id} style={styles.orderCard}>
@@ -93,9 +93,19 @@ export const OrdersScreen = () => {
                         </View>
 
                         <View style={styles.footerRow}>
-                            <Text style={styles.address}>Deliver To: {order.address}</Text>
+                            <Text style={styles.address}>
+                                Deliver To: {(() => {
+                                    try { 
+                                        const parsed = JSON.parse(order.address);
+                                        return [parsed.street, parsed.area, parsed.taluk, parsed.district, parsed.pincode].filter(Boolean).join(', ') || order.address;
+                                    } catch { 
+                                        return order.address || 'Address Unavailable'; 
+                                    }
+                                })()}
+                            </Text>
                         </View>
-                        {(order.payment_status || 'unpaid').toLowerCase() === 'paid' && (
+                        
+                        {(order.payment_status || 'unpaid').toLowerCase() === 'paid' && order.status?.toLowerCase() !== 'delivered' && order.status?.toLowerCase() !== 'cancelled' && (
                             <View style={[styles.footerRow, { backgroundColor: '#f0fdf4', padding: 10, borderRadius: 8, marginTop: 10 }]}>
                                 <Text style={{ color: '#166534', fontWeight: 'bold' }}>🔐 Secret Delivery PIN: <Text style={{ fontSize: 18, letterSpacing: 2 }}>{order.delivery_otp || '1234'}</Text></Text>
                             </View>
@@ -115,7 +125,7 @@ export const OrdersScreen = () => {
                     </View>
                 ))}
             </ScrollView>
-        </View>
+        </SafeAreaView>
     );
 };
 

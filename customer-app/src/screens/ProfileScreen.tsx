@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, ScrollView, StyleSheet, TouchableOpacity, SafeAreaView, Platform, StatusBar, Alert } from 'react-native';
+import { View, Text, ScrollView, StyleSheet, TouchableOpacity, SafeAreaView, Platform, StatusBar, Alert, Linking } from 'react-native';
 import { useNavigation, useIsFocused } from '@react-navigation/native';
 import axios from 'axios';
 import { useAuthStore } from '../store/useAuthStore';
@@ -55,7 +55,10 @@ export const ProfileScreen = () => {
                     <Text style={{ fontSize: 13, color: '#15803d', marginBottom: 15 }}>Refunds for missing deliveries are instantly sent here securely.</Text>
                     <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
                         <Text style={{ fontSize: 32, fontWeight: '900', color: '#0c831f' }}>₹{walletBalance}</Text>
-                        <TouchableOpacity style={{ backgroundColor: '#0c831f', paddingHorizontal: 15, paddingVertical: 8, borderRadius: 20 }}>
+                        <TouchableOpacity 
+                            style={{ backgroundColor: '#0c831f', paddingHorizontal: 15, paddingVertical: 8, borderRadius: 20 }}
+                            onPress={() => navigation.navigate('Main')}
+                        >
                             <Text style={{ color: '#fff', fontWeight: 'bold' }}>Use Balance</Text>
                         </TouchableOpacity>
                     </View>
@@ -87,8 +90,10 @@ export const ProfileScreen = () => {
                         <Text style={styles.chevron}>›</Text>
                     </TouchableOpacity>
 
-                    <TouchableOpacity style={styles.listItem} onPress={() => navigation.navigate('HelpSupport')}>
-                        <View style={styles.listIconContainer}><Text style={styles.listIcon}>🤝</Text></View>
+                    <TouchableOpacity style={styles.listItem} onPress={() => {
+                        Linking.openURL('https://wa.me/916381449476');
+                    }}>
+                        <View style={styles.listIconContainer}><Text style={styles.listIcon}>🎧</Text></View>
                         <Text style={styles.listText}>Help & Support</Text>
                         <Text style={styles.chevron}>›</Text>
                     </TouchableOpacity>

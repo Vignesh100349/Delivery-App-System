@@ -1,5 +1,6 @@
+import { SafeAreaView } from 'react-native-safe-area-context';
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, TextInput, ActivityIndicator, Alert, KeyboardAvoidingView, Platform } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, TextInput, ActivityIndicator, Alert, KeyboardAvoidingView, Platform } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import axios from 'axios';
@@ -129,31 +130,25 @@ export const EditProfileScreen = () => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#fff',
-    },
+        backgroundColor: '#fff'},
     header: {
         flexDirection: 'row',
         alignItems: 'center',
         padding: 15,
         borderBottomWidth: 1,
-        borderBottomColor: '#eee',
-    },
+        borderBottomColor: '#eee'},
     backBtn: {
-        marginRight: 15,
-    },
+        marginRight: 15},
     headerTitle: {
         fontSize: 18,
         fontWeight: 'bold',
-        color: '#111',
-    },
+        color: '#111'},
     content: {
         padding: 20,
-        flex: 1,
-    },
+        flex: 1},
     avatarContainer: {
         alignItems: 'center',
-        marginVertical: 20,
-    },
+        marginVertical: 20},
     profileCircle: {
         width: 100,
         height: 100,
@@ -161,32 +156,26 @@ const styles = StyleSheet.create({
         backgroundColor: '#0c831f',
         justifyContent: 'center',
         alignItems: 'center',
-        marginBottom: 10,
-    },
+        marginBottom: 10},
     profileInitials: {
         fontSize: 35,
         fontWeight: 'bold',
-        color: '#fff',
-    },
+        color: '#fff'},
     changePictureBtn: {
-        padding: 5,
-    },
+        padding: 5},
     changePictureText: {
         color: '#0c831f',
         fontWeight: 'bold',
-        fontSize: 14,
-    },
+        fontSize: 14},
     formGroup: {
-        marginBottom: 20,
-    },
+        marginBottom: 20},
     label: {
         fontSize: 13,
         fontWeight: 'bold',
         color: '#666',
         marginBottom: 8,
         textTransform: 'uppercase',
-        letterSpacing: 0.5,
-    },
+        letterSpacing: 0.5},
     input: {
         height: 50,
         borderWidth: 1,
@@ -195,24 +184,20 @@ const styles = StyleSheet.create({
         paddingHorizontal: 15,
         fontSize: 16,
         color: '#222',
-        backgroundColor: '#fafafa',
-    },
+        backgroundColor: '#fafafa'},
     disabledInput: {
         backgroundColor: '#eee',
-        color: '#888',
-    },
+        color: '#888'},
     helperText: {
         marginTop: 6,
         fontSize: 12,
         color: '#888',
-        lineHeight: 18,
-    },
+        lineHeight: 18},
     footer: {
         padding: 20,
         borderTopWidth: 1,
         borderTopColor: '#eee',
-        backgroundColor: '#fff',
-    },
+        backgroundColor: '#fff'},
     saveBtn: {
         backgroundColor: '#0c831f',
         height: 50,
@@ -222,11 +207,9 @@ const styles = StyleSheet.create({
         shadowColor: '#0c831f',
         shadowOpacity: 0.3,
         shadowRadius: 5,
-        shadowOffset: { width: 0, height: 2 },
-    },
+        shadowOffset: { width: 0, height: 2 }},
     saveBtnText: {
         color: '#fff',
         fontSize: 18,
-        fontWeight: 'bold',
-    }
+        fontWeight: 'bold'}
 });

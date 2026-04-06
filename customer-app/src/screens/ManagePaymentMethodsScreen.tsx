@@ -1,5 +1,6 @@
+import { SafeAreaView } from 'react-native-safe-area-context';
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, ScrollView, Alert, TextInput } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Alert, TextInput } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import { usePaymentStore } from '../store/usePaymentStore';
@@ -145,8 +146,7 @@ export const ManagePaymentMethodsScreen = () => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#f4f4f4',
-    },
+        backgroundColor: '#f4f4f4'},
     header: {
         flexDirection: 'row',
         alignItems: 'center',
@@ -154,27 +154,22 @@ const styles = StyleSheet.create({
         backgroundColor: '#fff',
         borderBottomWidth: 1,
         borderBottomColor: '#eee',
-        elevation: 1,
-    },
+        elevation: 1},
     backBtn: {
-        marginRight: 15,
-    },
+        marginRight: 15},
     headerTitle: {
         fontSize: 18,
         fontWeight: 'bold',
-        color: '#111',
-    },
+        color: '#111'},
     content: {
         paddingTop: 15,
-        paddingHorizontal: 15,
-    },
+        paddingHorizontal: 15},
     sectionHeader: {
         fontSize: 12,
         fontWeight: 'bold',
         color: '#888',
         letterSpacing: 1,
-        marginBottom: 10,
-    },
+        marginBottom: 10},
     cardContainer: {
         flexDirection: 'row',
         justifyContent: 'space-between',
@@ -187,12 +182,10 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.05,
         shadowRadius: 3,
         shadowOffset: { width: 0, height: 1 },
-        elevation: 1,
-    },
+        elevation: 1},
     cardInfo: {
         flexDirection: 'row',
-        alignItems: 'center',
-    },
+        alignItems: 'center'},
     iconCircle: {
         backgroundColor: '#284C8F',
         width: 40,
@@ -200,24 +193,20 @@ const styles = StyleSheet.create({
         borderRadius: 20,
         justifyContent: 'center',
         alignItems: 'center',
-        marginRight: 15,
-    },
+        marginRight: 15},
     cardName: {
         fontSize: 15,
         fontWeight: 'bold',
         color: '#333',
-        marginBottom: 3,
-    },
+        marginBottom: 3},
     cardMask: {
         fontSize: 13,
         color: '#888',
-        fontWeight: '500',
-    },
+        fontWeight: '500'},
     removeText: {
         color: '#d12948',
         fontSize: 13,
-        fontWeight: 'bold',
-    },
+        fontWeight: 'bold'},
     addNewBtn: {
         flexDirection: 'row',
         alignItems: 'center',
@@ -228,22 +217,19 @@ const styles = StyleSheet.create({
         marginTop: 5,
         borderWidth: 1,
         borderColor: '#0c831f',
-        borderStyle: 'dashed',
-    },
+        borderStyle: 'dashed'},
     addNewText: {
         marginLeft: 8,
         color: '#0c831f',
         fontWeight: 'bold',
-        fontSize: 15,
-    },
+        fontSize: 15},
     addForm: {
         backgroundColor: '#fff',
         padding: 15,
         borderRadius: 12,
         marginTop: 5,
         borderWidth: 1,
-        borderColor: '#eee',
-    },
+        borderColor: '#eee'},
     input: {
         borderWidth: 1,
         borderColor: '#ddd',
@@ -251,27 +237,22 @@ const styles = StyleSheet.create({
         paddingHorizontal: 15,
         height: 45,
         marginBottom: 10,
-        backgroundColor: '#fafafa',
-    },
+        backgroundColor: '#fafafa'},
     btnRow: {
         flexDirection: 'row',
         justifyContent: 'flex-end',
         alignItems: 'center',
-        marginTop: 5,
-    },
+        marginTop: 5},
     cancelBtn: {
         paddingVertical: 10,
         paddingHorizontal: 15,
-        marginRight: 10,
-    },
+        marginRight: 10},
     saveBtn: {
         backgroundColor: '#0c831f',
         paddingVertical: 10,
         paddingHorizontal: 20,
-        borderRadius: 8,
-    },
+        borderRadius: 8},
     saveBtnText: {
         color: '#fff',
-        fontWeight: 'bold',
-    }
+        fontWeight: 'bold'}
 });

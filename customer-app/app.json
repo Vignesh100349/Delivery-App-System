@@ -6,6 +6,7 @@
     "orientation": "portrait",
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
+    "icon": "./assets/loopie_icon.png",
     "splash": {
       "image": "./assets/loopie_icon.png",
       "resizeMode": "contain",
@@ -18,7 +19,7 @@
       "predictiveBackGestureEnabled": false,
       "config": {
         "googleMaps": {
-          "apiKey": "AIzaSyA_DUMMY_KEY_TO_PREVENT_CRASH_123"
+          "apiKey": "AIzaSyCYs4SaK-YQ2g68w3GKWiVK7xGeP99g0Xk"
         }
       }
     },

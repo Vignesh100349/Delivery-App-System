@@ -1,5 +1,6 @@
+import { SafeAreaView } from 'react-native-safe-area-context';
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, SafeAreaView, TextInput, TouchableOpacity, Switch, ActivityIndicator, FlatList, Image, ScrollView, Alert } from 'react-native';
+import { View, Text, StyleSheet, TextInput, TouchableOpacity, Switch, ActivityIndicator, FlatList, Image, ScrollView, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import axios from 'axios';
@@ -184,33 +185,28 @@ export const SearchScreen = () => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#fff',
-    },
+        backgroundColor: '#fff'},
     header: {
         flexDirection: 'row',
         alignItems: 'center',
         padding: 10,
-        backgroundColor: '#fff',
-    },
+        backgroundColor: '#fff'},
     backBtn: {
         padding: 5,
-        marginRight: 5,
-    },
+        marginRight: 5},
     searchBox: {
         flex: 1,
         flexDirection: 'row',
         alignItems: 'center',
         backgroundColor: '#f3f4f6',
         borderRadius: 12,
-        height: 45,
-    },
+        height: 45},
     searchInput: {
         flex: 1,
         height: '100%',
         paddingHorizontal: 10,
         fontSize: 15,
-        color: '#111',
-    },
+        color: '#111'},
     aiToggleBar: {
         flexDirection: 'row',
         justifyContent: 'space-between',
@@ -219,27 +215,22 @@ const styles = StyleSheet.create({
         paddingVertical: 8,
         backgroundColor: '#fafafa',
         borderBottomWidth: 1,
-        borderBottomColor: '#eee',
-    },
+        borderBottomColor: '#eee'},
     aiToggleText: {
         marginLeft: 6,
         fontSize: 12,
         fontWeight: 'bold',
-        letterSpacing: 0.5,
-    },
+        letterSpacing: 0.5},
     emptySearchContainer: {
-        padding: 20,
-    },
+        padding: 20},
     suggestTitle: {
         fontSize: 16,
         fontWeight: 'bold',
         color: '#222',
-        marginBottom: 15,
-    },
+        marginBottom: 15},
     tagCloud: {
         flexDirection: 'row',
-        flexWrap: 'wrap',
-    },
+        flexWrap: 'wrap'},
     tag: {
         backgroundColor: '#f3f4f6',
         paddingVertical: 8,
@@ -248,18 +239,15 @@ const styles = StyleSheet.create({
         marginRight: 10,
         marginBottom: 10,
         borderWidth: 1,
-        borderColor: '#e5e7eb',
-    },
+        borderColor: '#e5e7eb'},
     tagText: {
         fontSize: 13,
         color: '#444',
-        fontWeight: '500',
-    },
+        fontWeight: '500'},
     exploreGrid: {
         flexDirection: 'row',
         flexWrap: 'wrap',
-        justifyContent: 'space-between',
-    },
+        justifyContent: 'space-between'},
     exploreBox: {
         width: '31%',
         backgroundColor: '#fafafa',
@@ -268,32 +256,26 @@ const styles = StyleSheet.create({
         borderRadius: 12,
         padding: 15,
         alignItems: 'center',
-        marginBottom: 10,
-    },
+        marginBottom: 10},
     exploreEmoji: {
         fontSize: 24,
-        marginBottom: 8,
-    },
+        marginBottom: 8},
     exploreText: {
         fontSize: 11,
         fontWeight: 'bold',
         color: '#333',
-        textAlign: 'center',
-    },
+        textAlign: 'center'},
     noResultsContainer: {
         flex: 1,
         justifyContent: 'center',
-        alignItems: 'center',
-    },
+        alignItems: 'center'},
     noResultsText: {
         marginTop: 15,
         fontSize: 16,
         color: '#333',
-        fontWeight: 'bold',
-    },
+        fontWeight: 'bold'},
     noResultsSub: {
         marginTop: 5,
         fontSize: 13,
-        color: '#888',
-    }
+        color: '#888'}
 });

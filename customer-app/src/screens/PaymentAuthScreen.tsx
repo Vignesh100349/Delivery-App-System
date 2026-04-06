@@ -43,7 +43,7 @@ export const PaymentAuthScreen = () => {
     const verifyPaymentWithServer = async () => {
         try {
             setStatus('processing');
-            const res = await axios.get(`${API_URL}/verify-cashfree-session/${paymentSessionId}`);
+            const res = await axios.get(`${API_URL}/verify-phonepe-session/${paymentSessionId}`);
             if (res.data.isPaid === true) {
                 setStatus('success');
                 setTimeout(() => finishCheckout(), 2000);
@@ -59,17 +59,17 @@ export const PaymentAuthScreen = () => {
 
     // Removed mock payment handlers
 
-    const handleLaunchCashfree = async () => {
+    const handleLaunchPhonePe = async () => {
         try {
             if (!paymentUrl) {
-                Alert.alert("Error", "Missing Cashfree Gateway URL.");
+                Alert.alert("Error", "Missing PhonePe Gateway URL.");
                 return;
             }
 
 
             Alert.alert(
                 "Leaving App",
-                "You are being redirected to the secure Cashfree Checkout Page. Please complete the transaction there, and then return back to this app.",
+                "You are being redirected to the secure PhonePe Checkout Page. Please complete the transaction there, and then return back to this app.",
                 [
                     { text: "Cancel", style: 'cancel' },
                       {
@@ -113,14 +113,14 @@ export const PaymentAuthScreen = () => {
         <SafeAreaView style={styles.safeArea}>
             <View style={styles.container}>
                 <View style={styles.header}>
-                    <Text style={styles.headerTitle}>Cashfree Secure Terminal</Text>
+                    <Text style={styles.headerTitle}>PhonePe Secure Terminal</Text>
                 </View>
 
                 {status === 'pending' && (
                     <View style={styles.card}>
                         <Ionicons name="card-outline" size={60} color="#6b21a8" />
                         <Text style={styles.amount}>₹ {amount}</Text>
-                        <Text style={styles.subtext}>Continue to Cashfree's secure portal to input your Card, NetBanking, or UPI details.</Text>
+                        <Text style={styles.subtext}>Continue to PhonePe's secure portal to input your Card, NetBanking, or UPI details.</Text>
                         <Text style={styles.txnText}>Session ID: {paymentSessionId?.substring(0, 15)}...</Text>
 
                         <View style={styles.timerContainer}>
@@ -128,9 +128,9 @@ export const PaymentAuthScreen = () => {
                             <Text style={styles.timerText}>{formatTime(countdown)}</Text>
                         </View>
 
-                        <TouchableOpacity style={styles.realUpiBtn} onPress={handleLaunchCashfree}>
+                        <TouchableOpacity style={styles.realUpiBtn} onPress={handleLaunchPhonePe}>
                             <Ionicons name="lock-closed" size={20} color="#fff" style={{ marginRight: 8 }} />
-                            <Text style={styles.realUpiBtnText}>Proceed to Cashfree</Text>
+                            <Text style={styles.realUpiBtnText}>Proceed to PhonePe</Text>
                         </TouchableOpacity>
 
                         <TouchableOpacity style={[styles.realUpiBtn, { backgroundColor: '#111', marginTop: -10 }]} onPress={verifyPaymentWithServer}>

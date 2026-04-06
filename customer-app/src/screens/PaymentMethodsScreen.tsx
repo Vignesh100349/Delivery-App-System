@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Alert, ActivityIndicator, Platform } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import axios from 'axios';
@@ -13,6 +13,15 @@ export const PaymentMethodsScreen = () => {
     const { user } = useAuthStore();
     const [loading, setLoading] = useState(false);
     const [selectedMethod, setSelectedMethod] = useState<string>('cash');
+    const [walletBalance, setWalletBalance] = useState<number>(0);
+
+    useEffect(() => {
+        if(user?.id) {
+            axios.get(`${API_URL}/users/${user.id}`)
+                .then(r => setWalletBalance(Number(r.data.wallet_balance || 0)))
+                .catch(e => console.log('Wallet fetch error:', e));
+        }
+    }, [user?.id]);
 
     const total = cartTotal();
     const deliveryFee = 0; // Forced to free
@@ -35,6 +44,7 @@ export const PaymentMethodsScreen = () => {
             const orderPayload = {
                 user_id: user?.id || 1, 
                 address: JSON.stringify(deliveryAddressDetails),
+                payment_method: methodToUse,
                 items: cart.map(item => ({
                     product_id: item.id,
                     quantity: item.quantity,
@@ -48,14 +58,20 @@ export const PaymentMethodsScreen = () => {
 
             if (methodToUse === 'online') {
                 // Navigate to the Payment Auth screen with details
-                const cfRes = await axios.post(`${API_URL}/create-cashfree-session`, { amount: grandTotal, orderId: orderId });
+                const phonepeRes = await axios.post(`${API_URL}/create-phonepe-session`, { amount: grandTotal, orderId: orderId, phone: user?.phone || "9999999999" });
                 setLoading(false);
                 navigation.navigate('PaymentAuth', {
                     orderId: orderId,
-                    paymentSessionId: cfRes.data.payment_session_id,
-                    paymentUrl: cfRes.data.payment_url,
+                    paymentSessionId: phonepeRes.data.payment_session_id,
+                    paymentUrl: phonepeRes.data.payment_url,
                     amount: grandTotal
                 });
+            } else if (methodToUse === 'wallet') {
+                 Alert.alert(
+                    'Order Confirmed!',
+                    `Order #${orderId} Placed successfully using your Digital Wallet!`,
+                    [{ text: "OK", onPress: () => finishCheckout(orderId) }]
+                );
             } else {
                 // Cash on Delivery
                 Alert.alert(
@@ -88,6 +104,27 @@ export const PaymentMethodsScreen = () => {
 
             <View style={styles.methodsContainer}>
 
+                {/* Digital Wallet Option */}
+                <TouchableOpacity
+                    style={[styles.methodCard, selectedMethod === 'wallet' && styles.selectedMethod, walletBalance < grandTotal && { opacity: 0.5 }]}
+                    onPress={() => {
+                        if (walletBalance >= grandTotal) {
+                            setSelectedMethod('wallet');
+                        } else {
+                            Alert.alert('Insufficient Balance', 'Your wallet balance is lower than the order total. Please use another method.');
+                        }
+                    }}
+                    disabled={loading || walletBalance < grandTotal}
+                >
+                    <View style={styles.methodHeader}>
+                        <Text style={styles.methodTitle}>Digital Wallet (₹{walletBalance.toFixed(2)})</Text>
+                        <View style={styles.radioContainer}>
+                            {selectedMethod === 'wallet' && <View style={styles.radioSelected} />}
+                        </View>
+                    </View>
+                    <Text style={styles.methodDesc}>Instantly deducts from your fully secured refund balance.</Text>
+                </TouchableOpacity>
+
                 <TouchableOpacity
                     style={[styles.methodCard, selectedMethod === 'online' && styles.selectedMethod]}
                     onPress={() => {
@@ -97,12 +134,12 @@ export const PaymentMethodsScreen = () => {
                     disabled={loading}
                 >
                     <View style={styles.methodHeader}>
-                        <Text style={styles.methodTitle}>Cashfree Payments</Text>
+                        <Text style={styles.methodTitle}>PhonePe Payments</Text>
                         <View style={styles.radioContainer}>
                             {selectedMethod === 'online' && <View style={styles.radioSelected} />}
                         </View>
                     </View>
-                    <Text style={styles.methodDesc}>Directly pay via UPI, Credit/Debit Cards, or NetBanking</Text>
+                    <Text style={styles.methodDesc}>Directly pay via UPI, Credit/Debit Cards, or NetBanking natively.</Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity
@@ -122,9 +159,9 @@ export const PaymentMethodsScreen = () => {
 
             <View style={styles.footer}>
                 <TouchableOpacity
-                    style={[styles.payButton, loading && styles.payButtonDisabled]}
+                    style={[styles.payButton, loading && styles.payButtonDisabled, selectedMethod === 'wallet' && walletBalance < grandTotal && styles.payButtonDisabled]}
                     onPress={() => handleConfirmPayment()}
-                    disabled={loading}
+                    disabled={loading || (selectedMethod === 'wallet' && walletBalance < grandTotal)}
                 >
                     {loading ? (
                         <ActivityIndicator color="white" />
