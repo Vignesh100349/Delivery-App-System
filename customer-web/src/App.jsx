@@ -8,7 +8,10 @@ import Cart from './pages/Cart';
 import Orders from './pages/Orders';
 import Profile from './pages/Profile';
 import AuthModal from './components/AuthModal';
-import { PrivacyPolicy, TermsConditions, RefundPolicy, ContactUs } from './pages/PolicyPages';
+import Privacy from './pages/Privacy';
+import Terms from './pages/Terms';
+import Refund from './pages/Refund';
+import Contact from './pages/Contact';
 
 const API_URL = 'https://delivery-app-system.onrender.com';
 
@@ -79,10 +82,10 @@ function App() {
           <Route path="/cart" element={<Cart />} />
           <Route path="/orders" element={<Orders />} />
           <Route path="/profile" element={<Profile />} />
-          <Route path="/privacy" element={<PrivacyPolicy />} />
-          <Route path="/terms" element={<TermsConditions />} />
-          <Route path="/refund" element={<RefundPolicy />} />
-          <Route path="/contact" element={<ContactUs />} />
+          <Route path="/privacy" element={<Privacy />} />
+          <Route path="/terms" element={<Terms />} />
+          <Route path="/refund" element={<Refund />} />
+          <Route path="/contact" element={<Contact />} />
         </Routes>
       </main>
       <Footer />
