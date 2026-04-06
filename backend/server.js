@@ -580,25 +580,26 @@ app.post('/create-payphi-payment', async (req, res) => {
   }
 })
 
-/* PhonePe Native Integration */
+/* PhonePe Native Integration - V1 Universal Sandbox */
 const crypto = require('crypto');
 
-const PHONEPE_ENV = process.env.PHONEPE_ENV || 'PRODUCTION';
+const PHONEPE_ENV = process.env.PHONEPE_ENV || 'SANDBOX';
 const PHONEPE_HOST = PHONEPE_ENV === 'PRODUCTION' ? 'https://api.phonepe.com/apis/hermes' : 'https://api-preprod.phonepe.com/apis/pg-sandbox';
-const PHONEPE_MERCHANT_ID = process.env.PHONEPE_MERCHANT_ID || 'M23IR2JCOTX20_2604061039';
-const PHONEPE_SALT_KEY = process.env.PHONEPE_SALT_KEY || 'OTUzNDM4ODgtOGQxYi00MmFlLWFmYTMtZjJlZDlmZDQ3M2Iy';
+const PHONEPE_MERCHANT_ID = process.env.PHONEPE_MERCHANT_ID || 'PGTESTPAYUAT';
+const PHONEPE_SALT_KEY = process.env.PHONEPE_SALT_KEY || '099eb0cd-02cf-4e2a-8aca-3e6c6aff0399';
 const PHONEPE_SALT_INDEX = process.env.PHONEPE_SALT_INDEX || '1';
 
 app.post('/create-phonepe-session', async (req, res) => {
   try {
     const { amount, orderId, phone } = req.body;
     const txtId = "TXN_" + orderId + "_" + Date.now();
+    const amountPaise = parseInt(amount * 100);
 
     const payload = {
       merchantId: PHONEPE_MERCHANT_ID,
       merchantTransactionId: txtId,
       merchantUserId: "MUID_" + (phone || "9999999999"),
-      amount: parseInt(amount * 100), // Phonepe requires amount in pure paise
+      amount: amountPaise,
       redirectUrl: "https://delivery-app-system-deca.vercel.app/orders",
       redirectMode: "REDIRECT",
       callbackUrl: "https://delivery-app-system.onrender.com/verify-phonepe-callback",
@@ -611,12 +612,11 @@ app.post('/create-phonepe-session', async (req, res) => {
     const payloadString = JSON.stringify(payload);
     const base64EncodedPayload = Buffer.from(payloadString).toString('base64');
     
-    // X-VERIFY generation = sha256(base64EncodedPayload + "/pg/v1/pay" + saltKey) + "###" + saltIndex
     const stringToHash = base64EncodedPayload + '/pg/v1/pay' + PHONEPE_SALT_KEY;
     const sha256 = crypto.createHash('sha256').update(stringToHash).digest('hex');
     const xVerify = sha256 + "###" + PHONEPE_SALT_INDEX;
 
-    console.log("Requesting PhonePe Payment for", txtId);
+    console.log("Requesting PhonePe Sandbox Payment for", txtId);
 
     const response = await axios.post(`${PHONEPE_HOST}/pg/v1/pay`, {
       request: base64EncodedPayload
@@ -629,18 +629,17 @@ app.post('/create-phonepe-session', async (req, res) => {
     });
 
     res.json({
-      payment_session_id: txtId,
-      payment_url: response.data?.data?.instrumentResponse?.redirectInfo?.url
+        payment_session_id: txtId,
+        payment_url: response.data?.data?.instrumentResponse?.redirectInfo?.url
     });
 
   } catch (err) {
-    console.error("PhonePe Initiation Failed:", err.response?.data || err.message);
+    console.error("PhonePe V1 Initiation Failed:", err.response?.data || err.message);
     
-    // Auto-Mock fallback when keys are completely missing or invalid natively
     const fallbackLinkId = "MOCKTXN_" + req.body.orderId + "_" + Date.now();
     return res.json({
       payment_session_id: fallbackLinkId,
-      payment_url: "https://google.com" // mock dummy
+      payment_url: "https://google.com" // mock fallback
     });
   }
 })
@@ -650,7 +649,6 @@ app.get('/verify-phonepe-session/:txnId', async (req, res) => {
   try {
     const txtId = req.params.txnId;
 
-    // Auto-Mock fallback detection
     if (txtId.startsWith('MOCKTXN_')) {
       const orderIdRaw = txtId.split('_')[1];
       await pool.query('UPDATE orders SET payment_status = $1 WHERE id = $2', ['paid', orderIdRaw]).catch(() => null);
@@ -672,7 +670,6 @@ app.get('/verify-phonepe-session/:txnId', async (req, res) => {
     const status = response.data?.data?.state;
     const isPaid = status === 'COMPLETED';
 
-    // If perfectly PAID, carefully parse the raw order ID back!
     if (isPaid) {
       const orderIdRaw = txtId.split('_')[1];
       await pool.query('UPDATE orders SET payment_status = $1 WHERE id = $2', ['paid', orderIdRaw]).catch(() => console.log('Could not update SQL post-PhonePe.'));
