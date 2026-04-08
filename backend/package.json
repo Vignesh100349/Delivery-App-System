@@ -19,6 +19,7 @@
     "googlethis": "^1.8.0",
     "jsonwebtoken": "^9.0.3",
     "pg": "^8.18.0",
+    "pg-sdk-node": "^2.0.2",
     "razorpay": "^2.9.6"
   }
 }

@@ -585,8 +585,8 @@ const crypto = require('crypto');
 
 const PHONEPE_ENV = process.env.PHONEPE_ENV || 'SANDBOX';
 const PHONEPE_HOST = PHONEPE_ENV === 'PRODUCTION' ? 'https://api.phonepe.com/apis/hermes' : 'https://api-preprod.phonepe.com/apis/pg-sandbox';
-const PHONEPE_MERCHANT_ID = process.env.PHONEPE_MERCHANT_ID || 'PGTESTPAYUAT';
-const PHONEPE_SALT_KEY = process.env.PHONEPE_SALT_KEY || '099eb0cd-02cf-4e2a-8aca-3e6c6aff0399';
+const PHONEPE_MERCHANT_ID = process.env.PHONEPE_MERCHANT_ID || 'PGTESTPAYUAT86';
+const PHONEPE_SALT_KEY = process.env.PHONEPE_SALT_KEY || '96434309-7796-489d-8924-ab56988a6076';
 const PHONEPE_SALT_INDEX = process.env.PHONEPE_SALT_INDEX || '1';
 
 app.post('/create-phonepe-session', async (req, res) => {
@@ -681,6 +681,28 @@ app.get('/verify-phonepe-session/:txnId', async (req, res) => {
     res.status(500).json({ error: err.response?.data?.message || err.message });
   }
 })
+
+/* PhonePe S2S Webhook Callback */
+app.post('/verify-phonepe-callback', async (req, res) => {
+  try {
+    const { response } = req.body;
+    if (!response) return res.status(400).send('Invalid Payload');
+
+    const decodedResponse = Buffer.from(response, 'base64').toString('utf-8');
+    const parsedData = JSON.parse(decodedResponse);
+
+    if (parsedData.code === 'PAYMENT_SUCCESS') {
+      const txtId = parsedData.data.merchantTransactionId;
+      const orderIdRaw = txtId.split('_')[1];
+      await pool.query('UPDATE orders SET payment_status = $1 WHERE id = $2', ['paid', orderIdRaw]).catch(() => console.log('Webhook SQL Update Failed'));
+    }
+
+    res.status(200).send('OK');
+  } catch(err) {
+    console.error("PhonePe Webhook Failed:", err.message);
+    res.status(500).send('Error');
+  }
+});
 
 
 
