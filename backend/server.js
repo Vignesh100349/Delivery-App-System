@@ -591,7 +591,7 @@ const PHONEPE_SALT_INDEX = process.env.PHONEPE_SALT_INDEX || '1';
 
 app.post('/create-phonepe-session', async (req, res) => {
   try {
-    const { amount, orderId, phone } = req.body;
+    const { amount, orderId, phone, redirectUrl } = req.body;
     const txtId = "TXN_" + orderId + "_" + Date.now();
     const amountPaise = parseInt(amount * 100);
 
@@ -600,8 +600,8 @@ app.post('/create-phonepe-session', async (req, res) => {
       merchantTransactionId: txtId,
       merchantUserId: "MUID_" + (phone || "9999999999"),
       amount: amountPaise,
-      redirectUrl: "https://delivery-app-system-deca.vercel.app/orders",
-      redirectMode: "REDIRECT",
+      redirectUrl: redirectUrl || "https://delivery-app-system.onrender.com/phonepe-redirect",
+      redirectMode: "POST",
       callbackUrl: "https://delivery-app-system.onrender.com/verify-phonepe-callback",
       mobileNumber: phone || "9999999999",
       paymentInstrument: {
@@ -643,6 +643,15 @@ app.post('/create-phonepe-session', async (req, res) => {
     });
   }
 })
+
+/* PhonePe Browser Return Bounce (Converts PhonePe POST to a safe React GET) */
+app.post('/phonepe-redirect', async (req, res) => {
+    // PhonePe posts back to this endpoint when the user completes payment on the browser.
+    // Vercel and React Dev Servers crash if they receive POSTs, so we handle it here,
+    // and issue a safe 302 Redirect to the frontend's /orders page.
+    const origin = req.query.origin || 'https://delivery-app-system-deca.vercel.app';
+    res.redirect(`${origin}/orders`);
+});
 
 /* Verify PhonePe Native Payment Status dynamically */
 app.get('/verify-phonepe-session/:txnId', async (req, res) => {

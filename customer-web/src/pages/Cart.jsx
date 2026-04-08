@@ -44,9 +44,11 @@ function Cart() {
                 const phonepeRes = await axios.post(`${API_URL}/create-phonepe-session`, {
                     amount: grandTotal,
                     orderId: res.data.orderId,
-                    phone: user.phone || "9999999999"
+                    phone: user.phone || "9999999999",
+                    redirectUrl: window.location.origin + '/orders'
                 });
                 if (phonepeRes.data.payment_url) {
+                    clearCart();
                     window.location.href = phonepeRes.data.payment_url;
                     return;
                 } else {
