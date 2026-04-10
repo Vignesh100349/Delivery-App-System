@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
-import { BrowserRouter, Routes, Route, Link, useNavigate } from 'react-router-dom';
-import { ShoppingBag, Search, User, MapPin, Menu, X, LogIn, Leaf, Percent, HeartHandshake } from 'lucide-react';
+import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
+import { ShoppingBag, Search, User, Leaf, LogIn } from 'lucide-react';
 import { useStore } from './store';
 
 import Home from './pages/Home';
 import Cart from './pages/Cart';
+import Checkout from './pages/Checkout'; // NEW: Added Dedicated Checkout Page
 import Orders from './pages/Orders';
 import Profile from './pages/Profile';
 import AuthModal from './components/AuthModal';
@@ -12,8 +13,6 @@ import Privacy from './pages/Privacy';
 import Terms from './pages/Terms';
 import Refund from './pages/Refund';
 import Contact from './pages/Contact';
-
-const API_URL = 'https://delivery-app-system.onrender.com';
 
 function Navbar() {
   const { cart, isAuthenticated, user } = useStore();
@@ -101,6 +100,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/cart" element={<Cart />} />
+          <Route path="/checkout" element={<Checkout />} />
           <Route path="/orders" element={<Orders />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/privacy" element={<Privacy />} />
