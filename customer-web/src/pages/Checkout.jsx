@@ -13,7 +13,7 @@ function Checkout() {
     const [paymentMethod, setPaymentMethod] = useState('online');
 
     const total = cartTotal();
-    const deliveryFee = total > 0 ? 15 : 0; 
+    const deliveryFee = 0; // Temporarily set to 0 as requested
     const grandTotal = total + parseInt(deliveryFee);
 
     useEffect(() => {
