@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useStore } from '../store';
-import { X } from 'lucide-react';
+import { X, Mail, Lock, Phone as PhoneIcon, User as UserIcon } from 'lucide-react';
 
 const API_URL = 'https://delivery-app-system.onrender.com';
 
@@ -34,49 +34,72 @@ function AuthModal({ onClose }) {
   return (
     <div className="modal-overlay">
       <div className="modal-content">
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-          <h2>{isLogin ? 'Welcome Back' : 'Create Account'}</h2>
-          <button className="btn-icon-only" style={{ padding: '8px', border: 'none', boxShadow: 'none' }} onClick={onClose}>
-            <X size={20} />
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '30px' }}>
+          <div>
+            <h2 style={{ fontSize: '28px', fontWeight: '800', color: 'var(--secondary)' }}>
+              {isLogin ? 'Welcome Back' : 'Join Loopie'}
+            </h2>
+            <p style={{ color: 'var(--text-muted)', fontSize: '14px', marginTop: '5px' }}>
+              {isLogin ? 'Login to continue shopping' : 'Create an account to order fresh groceries'}
+            </p>
+          </div>
+          <button className="btn-icon-only" style={{ padding: '10px', alignSelf: 'flex-start', background: 'transparent', boxShadow: 'none', border: '1px solid var(--border-light)' }} onClick={onClose}>
+            <X size={20} color="var(--text-muted)" />
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
           {!isLogin && (
+            <div style={{ position: 'relative' }}>
+              <UserIcon size={18} style={{ position: 'absolute', top: '50%', left: '16px', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
+              <input 
+                required 
+                className="input-field" 
+                style={{ paddingLeft: '45px' }}
+                placeholder="Full Name" 
+                value={name} 
+                onChange={e => setName(e.target.value)} 
+              />
+            </div>
+          )}
+          
+          <div style={{ position: 'relative' }}>
+            <PhoneIcon size={18} style={{ position: 'absolute', top: '50%', left: '16px', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
             <input 
               required 
               className="input-field" 
-              placeholder="Full Name" 
-              value={name} 
-              onChange={e => setName(e.target.value)} 
+              style={{ paddingLeft: '45px' }}
+              placeholder="Phone Number" 
+              value={phone} 
+              onChange={e => setPhone(e.target.value)} 
             />
-          )}
-          <input 
-            required 
-            className="input-field" 
-            placeholder="Phone Number" 
-            value={phone} 
-            onChange={e => setPhone(e.target.value)} 
-          />
-          <input 
-            required 
-            type="password" 
-            className="input-field" 
-            placeholder="Password" 
-            value={password} 
-            onChange={e => setPassword(e.target.value)} 
-          />
+          </div>
+
+          <div style={{ position: 'relative' }}>
+            <Lock size={18} style={{ position: 'absolute', top: '50%', left: '16px', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
+            <input 
+              required 
+              type="password" 
+              className="input-field" 
+              style={{ paddingLeft: '45px' }}
+              placeholder="Password" 
+              value={password} 
+              onChange={e => setPassword(e.target.value)} 
+            />
+          </div>
           
-          <button type="submit" className="btn btn-primary" style={{ marginTop: '10px' }} disabled={loading}>
-            {loading ? 'Processing...' : (isLogin ? 'Login' : 'Sign Up')}
+          <button type="submit" className="btn btn-primary" style={{ marginTop: '10px', fontSize: '16px', width: '100%', padding: '16px' }} disabled={loading}>
+            {loading ? 'Processing...' : (isLogin ? 'Secure Login' : 'Create Account')}
           </button>
         </form>
 
-        <p style={{ textAlign: 'center', marginTop: '20px', color: 'var(--text-muted)' }}>
+        <p style={{ textAlign: 'center', marginTop: '30px', color: 'var(--text-muted)', fontSize: '14px' }}>
           {isLogin ? "Don't have an account? " : "Already have an account? "}
           <span 
-            style={{ color: 'var(--primary)', fontWeight: 'bold', cursor: 'pointer' }} 
+            style={{ color: 'var(--primary)', fontWeight: 'bold', cursor: 'pointer', transition: 'color 0.2s' }} 
             onClick={() => setIsLogin(!isLogin)}
+            onMouseOver={e => e.target.style.color = '#059669'}
+            onMouseOut={e => e.target.style.color = 'var(--primary)'}
           >
             {isLogin ? 'Sign up' : 'Login'}
           </span>

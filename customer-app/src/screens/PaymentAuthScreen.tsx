@@ -1,8 +1,10 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator, SafeAreaView, Platform, StatusBar, Linking, Alert, AppState } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator, SafeAreaView, Platform, StatusBar, Alert } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
+import { WebView } from 'react-native-webview';
 import { useCartStore } from '../store/useCartStore';
+import { useAuthStore } from '../store/useAuthStore';
 import axios from 'axios';
 
 const API_URL = 'https://delivery-app-system.onrender.com';
@@ -11,107 +13,30 @@ export const PaymentAuthScreen = () => {
     const navigation = useNavigation<any>();
     const route = useRoute<any>();
     const { clearCart } = useCartStore();
-    const { orderId, paymentSessionId, paymentUrl, amount } = route.params || {};
+    const { user } = useAuthStore();
+    const { orderId, paymentSessionId, amount } = route.params || {};
 
     const [status, setStatus] = useState<'pending' | 'processing' | 'success' | 'failed'>('pending');
-    const [countdown, setCountdown] = useState(300); // 5 minutes to complete payment
-    const appState = useRef(AppState.currentState);
 
-    useEffect(() => {
-        let timer: NodeJS.Timeout;
-        if (status === 'pending' && countdown > 0) {
-            timer = setInterval(() => setCountdown(c => c - 1), 1000);
-        } else if (countdown === 0) {
-            setStatus('failed');
-        }
-        return () => clearInterval(timer);
-    }, [countdown, status]);
-
-    // Background listener
-    useEffect(() => {
-        const subscription = AppState.addEventListener('change', nextAppState => {
-            if (appState.current.match(/inactive|background/) && nextAppState === 'active') {
-                if (status === 'pending') {
-                    verifyPaymentWithServer();
-                }
-            }
-            appState.current = nextAppState;
-        });
-        return () => subscription.remove();
-    }, [status]);
-
-    const verifyPaymentWithServer = async () => {
+    const handlePaymentComplete = async (payment_id: string, signature: string) => {
         try {
             setStatus('processing');
-            const res = await axios.get(`${API_URL}/verify-phonepe-session/${paymentSessionId}`);
-            if (res.data.isPaid === true) {
+            const res = await axios.post(`${API_URL}/verify-razorpay-payment`, {
+                razorpay_order_id: paymentSessionId,
+                razorpay_payment_id: payment_id,
+                razorpay_signature: signature,
+                orderId: orderId
+            });
+            if (res.data.success) {
                 setStatus('success');
                 setTimeout(() => finishCheckout(), 2000);
             } else {
-                setStatus('pending');
-                Alert.alert("Pending", `Payment hasn't been completed yet. Current Status: ${res.data.status}`);
+                setStatus('failed');
+                Alert.alert("Failed", "Payment signature verification failed.");
             }
         } catch (err: any) {
-            setStatus('pending');
+            setStatus('failed');
             Alert.alert("Error", err.message);
-        }
-    };
-
-    // Removed mock payment handlers
-
-    const handleLaunchPhonePe = async () => {
-        try {
-            if (!paymentUrl) {
-                Alert.alert("Error", "Missing PhonePe Gateway URL.");
-                return;
-            }
-
-            if (paymentUrl === 'https://google.com') {
-                setStatus('processing');
-                Alert.alert(
-                    "Simulator Mode 🧪",
-                    "The PhonePe gateway API returned a fallback due to outdated sandbox credentials on the remote server. Let's securely bypass this so you can verify the end-to-end functionality right now!",
-                    [{
-                        text: "Simulate Success",
-                        onPress: () => {
-                            verifyPaymentWithServer();
-                        }
-                    }]
-                );
-                return;
-            }
-
-            if (Platform.OS === 'web') {
-                setStatus('pending');
-                window.open(paymentUrl, '_blank');
-                return;
-            }
-
-            Alert.alert(
-                "Leaving App",
-                "You are being redirected to the secure PhonePe Checkout Page. Please complete the transaction there, and then return back to this app.",
-                [
-                    { text: "Cancel", style: 'cancel' },
-                      {
-                          text: "Continue to Payment",
-                          onPress: async () => {
-                              try {
-                                  setStatus('pending'); // Reset state silently
-                                  const supported = await Linking.canOpenURL(paymentUrl);
-                                  if (supported) {
-                                      await Linking.openURL(paymentUrl);
-                                  } else {
-                                      Alert.alert("Error", "No Web Browser safely found on this functionally device.");
-                                  }
-                              } catch (err) {
-                                  Alert.alert('Error', `Could not open browser.\n\n${err}`);
-                              }
-                          }
-                      }
-                ]
-            );
-        } catch (err) {
-            console.error("Gateway Launch Error", err);
         }
     };
 
@@ -123,53 +48,112 @@ export const PaymentAuthScreen = () => {
         });
     };
 
-    const formatTime = (seconds: number) => {
-        const m = Math.floor(seconds / 60);
-        const s = seconds % 60;
-        return `${m}:${s < 10 ? '0' : ''}${s}`;
-    };
+    const htmlContent = `
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+            <style>
+                body {background-color: #f4f4f4; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; font-family: sans-serif; color: #333;}
+                .loader {border: 4px solid #f3f3f3; border-top: 4px solid #0c831f; border-radius: 50%; width: 30px; height: 30px; animation: spin 1s linear infinite;}
+                @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+            </style>
+        </head>
+        <body>
+            <div style="text-align:center;">
+                <div class="loader" style="margin: 0 auto 15px auto;"></div>
+                <p>Loading Secure Gateway...</p>
+            </div>
+            <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+            <script>
+                var options = {
+                    "key": "rzp_live_SbsaLniHNb908C",
+                    "amount": "${amount * 100}",
+                    "currency": "INR",
+                    "name": "Delivery App",
+                    "description": "Order Payment",
+                    "order_id": "${paymentSessionId}",
+                    "handler": function (response){
+                        window.ReactNativeWebView.postMessage(JSON.stringify({
+                            status: 'success',
+                            payment_id: response.razorpay_payment_id,
+                            signature: response.razorpay_signature
+                        }));
+                    },
+                    "prefill": {
+                        "name": "${user?.name || ''}",
+                        "contact": "${user?.phone || '9999999999'}"
+                    },
+                    "theme": {
+                        "color": "#0c831f"
+                    },
+                    "modal": {
+                        "ondismiss": function(){
+                            window.ReactNativeWebView.postMessage(JSON.stringify({status: 'dismissed'}));
+                        }
+                    }
+                };
+                
+                setTimeout(function() {
+                    var rzp1 = new Razorpay(options);
+                    rzp1.on('payment.failed', function (response){
+                        window.ReactNativeWebView.postMessage(JSON.stringify({
+                            status: 'failed',
+                            error: response.error.description
+                        }));
+                    });
+                    rzp1.open();
+                }, 800);
+            </script>
+        </body>
+        </html>
+    `;
 
     return (
         <SafeAreaView style={styles.safeArea}>
-            <View style={styles.container}>
-                <View style={styles.header}>
-                    <Text style={styles.headerTitle}>PhonePe Secure Terminal</Text>
+            <View style={styles.header}>
+                <Text style={styles.headerTitle}>Razorpay Secure Terminal</Text>
+            </View>
+
+            {status === 'pending' && (
+                <View style={styles.container}>
+                    <WebView
+                        source={{ html: htmlContent }}
+                        originWhitelist={['*']}
+                        onMessage={(event) => {
+                            try {
+                                const data = JSON.parse(event.nativeEvent.data);
+                                if (data.status === 'success') {
+                                    handlePaymentComplete(data.payment_id, data.signature);
+                                } else if (data.status === 'failed') {
+                                    Alert.alert("Payment Failed", data.error || "Transaction cancelled");
+                                    setStatus('failed');
+                                } else if (data.status === 'dismissed') {
+                                    setStatus('failed');
+                                }
+                            } catch(e) {
+                                console.log('JSON parse err', e);
+                            }
+                        }}
+                        style={{ flex: 1, backgroundColor: 'transparent', height: '100%', width: '100%' }}
+                        javaScriptEnabled={true}
+                        domStorageEnabled={true}
+                    />
                 </View>
+            )}
 
-                {status === 'pending' && (
-                    <View style={styles.card}>
-                        <Ionicons name="card-outline" size={60} color="#6b21a8" />
-                        <Text style={styles.amount}>₹ {amount}</Text>
-                        <Text style={styles.subtext}>Continue to PhonePe's secure portal to input your Card, NetBanking, or UPI details.</Text>
-                        <Text style={styles.txnText}>Session ID: {paymentSessionId?.substring(0, 15)}...</Text>
-
-                        <View style={styles.timerContainer}>
-                            <Text style={styles.timerLabel}>Time remaining: </Text>
-                            <Text style={styles.timerText}>{formatTime(countdown)}</Text>
-                        </View>
-
-                        <TouchableOpacity style={styles.realUpiBtn} onPress={handleLaunchPhonePe}>
-                            <Ionicons name="lock-closed" size={20} color="#fff" style={{ marginRight: 8 }} />
-                            <Text style={styles.realUpiBtnText}>Proceed to PhonePe</Text>
-                        </TouchableOpacity>
-
-                        <TouchableOpacity style={[styles.realUpiBtn, { backgroundColor: '#111', marginTop: -10 }]} onPress={verifyPaymentWithServer}>
-                            <Ionicons name="reload" size={18} color="#fff" style={{ marginRight: 8 }} />
-                            <Text style={styles.realUpiBtnText}>Manually Verify Status</Text>
-                        </TouchableOpacity>
-
-                    </View>
-                )}
-
-                {status === 'processing' && (
+            {status === 'processing' && (
+                <View style={styles.centeredContainer}>
                     <View style={styles.card}>
                         <ActivityIndicator size="large" color="#0c831f" />
                         <Text style={styles.processingText}>Verifying Payment...</Text>
                         <Text style={styles.subtext}>Please do not press back or close this screen.</Text>
                     </View>
-                )}
+                </View>
+            )}
 
-                {status === 'success' && (
+            {status === 'success' && (
+                <View style={styles.centeredContainer}>
                     <View style={styles.card}>
                         <View style={styles.successIcon}>
                             <Ionicons name="checkmark" size={50} color="#fff" />
@@ -177,21 +161,23 @@ export const PaymentAuthScreen = () => {
                         <Text style={styles.successText}>Payment Successful!</Text>
                         <Text style={styles.subtext}>Your order #{orderId} has been placed.</Text>
                     </View>
-                )}
+                </View>
+            )}
 
-                {status === 'failed' && (
+            {status === 'failed' && (
+                <View style={styles.centeredContainer}>
                     <View style={styles.card}>
                         <View style={styles.failIcon}>
                             <Ionicons name="close" size={50} color="#fff" />
                         </View>
                         <Text style={styles.failText}>Payment Failed</Text>
-                        <Text style={styles.subtext}>The payment request was rejected or timed out.</Text>
+                        <Text style={styles.subtext}>The payment request was rejected or cancelled.</Text>
                         <TouchableOpacity style={styles.retryBtn} onPress={() => navigation.goBack()}>
                             <Text style={styles.retryBtnText}>Go Back to Retry</Text>
                         </TouchableOpacity>
                     </View>
-                )}
-            </View>
+                </View>
+            )}
         </SafeAreaView>
     );
 };
@@ -204,6 +190,10 @@ const styles = StyleSheet.create({
     },
     container: {
         flex: 1,
+        marginTop: 50, // Space for header
+    },
+    centeredContainer: {
+        flex: 1,
         padding: 20,
         justifyContent: 'center',
     },
@@ -213,6 +203,7 @@ const styles = StyleSheet.create({
         left: 0,
         right: 0,
         alignItems: 'center',
+        zIndex: 10,
     },
     headerTitle: {
         fontSize: 18,
@@ -230,96 +221,12 @@ const styles = StyleSheet.create({
         shadowRadius: 8,
         elevation: 4,
     },
-    amount: {
-        fontSize: 36,
-        fontWeight: '900',
-        color: '#111',
-        marginVertical: 15,
-    },
     subtext: {
         fontSize: 14,
         color: '#666',
         textAlign: 'center',
         lineHeight: 20,
         marginBottom: 10,
-    },
-    txnText: {
-        fontSize: 12,
-        color: '#aaa',
-        marginBottom: 20,
-    },
-    timerContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        marginBottom: 30,
-        backgroundColor: '#fbe9e7',
-        paddingHorizontal: 15,
-        paddingVertical: 8,
-        borderRadius: 20,
-    },
-    timerLabel: {
-        color: '#d84315',
-        fontSize: 14,
-    },
-    timerText: {
-        color: '#d84315',
-        fontWeight: 'bold',
-        fontSize: 16,
-    },
-    mockActions: {
-        width: '100%',
-        marginTop: 20,
-        borderTopWidth: 1,
-        borderTopColor: '#eee',
-        paddingTop: 20,
-    },
-    realUpiBtn: {
-        backgroundColor: '#6b21a8',
-        paddingVertical: 14,
-        paddingHorizontal: 15,
-        borderRadius: 8,
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'center',
-        marginBottom: 20,
-        width: '100%',
-        elevation: 2,
-    },
-    realUpiBtnText: {
-        color: '#fff',
-        fontWeight: 'bold',
-        fontSize: 15,
-    },
-    mockHeader: {
-        textAlign: 'center',
-        color: '#888',
-        fontSize: 12,
-        marginBottom: 15,
-    },
-    mockApproveBtn: {
-        backgroundColor: '#0c831f',
-        paddingVertical: 14,
-        borderRadius: 8,
-        alignItems: 'center',
-        marginBottom: 10,
-    },
-    mockBtnText: {
-        color: '#fff',
-        fontWeight: 'bold',
-        fontSize: 15,
-    },
-    mockRejectBtn: {
-        backgroundColor: '#fff',
-        paddingVertical: 14,
-        borderRadius: 8,
-        alignItems: 'center',
-        borderWidth: 1,
-        borderColor: '#d12948',
-    },
-    mockRejectBtnText: {
-        color: '#d12948',
-        fontWeight: 'bold',
-        fontSize: 15,
     },
     processingText: {
         fontSize: 18,

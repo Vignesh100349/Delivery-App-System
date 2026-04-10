@@ -580,136 +580,57 @@ app.post('/create-payphi-payment', async (req, res) => {
   }
 })
 
-/* PhonePe Native Integration - V1 Universal Sandbox */
+/* Razorpay Integration */
+const Razorpay = require('razorpay');
 const crypto = require('crypto');
 
-const PHONEPE_ENV = process.env.PHONEPE_ENV || 'SANDBOX';
-const PHONEPE_HOST = PHONEPE_ENV === 'PRODUCTION' ? 'https://api.phonepe.com/apis/hermes' : 'https://api-preprod.phonepe.com/apis/pg-sandbox';
-const PHONEPE_MERCHANT_ID = process.env.PHONEPE_MERCHANT_ID || 'PGTESTPAYUAT86';
-const PHONEPE_SALT_KEY = process.env.PHONEPE_SALT_KEY || '96434309-7796-489d-8924-ab56988a6076';
-const PHONEPE_SALT_INDEX = process.env.PHONEPE_SALT_INDEX || '1';
+const RAZORPAY_KEY_ID = process.env.RAZORPAY_KEY_ID || 'rzp_live_SbsaLniHNb908C';
+const RAZORPAY_KEY_SECRET = process.env.RAZORPAY_KEY_SECRET || 'bt1pDaa9hC2MVllsANZej1ZJ';
 
-app.post('/create-phonepe-session', async (req, res) => {
-  try {
-    const { amount, orderId, phone, redirectUrl } = req.body;
-    const txtId = "TXN_" + orderId + "_" + Date.now();
-    const amountPaise = parseInt(amount * 100);
-
-    const payload = {
-      merchantId: PHONEPE_MERCHANT_ID,
-      merchantTransactionId: txtId,
-      merchantUserId: "MUID_" + (phone || "9999999999"),
-      amount: amountPaise,
-      redirectUrl: redirectUrl || "https://delivery-app-system.onrender.com/phonepe-redirect",
-      redirectMode: "POST",
-      callbackUrl: "https://delivery-app-system.onrender.com/verify-phonepe-callback",
-      mobileNumber: phone || "9999999999",
-      paymentInstrument: {
-        type: "PAY_PAGE"
-      }
-    };
-
-    const payloadString = JSON.stringify(payload);
-    const base64EncodedPayload = Buffer.from(payloadString).toString('base64');
-    
-    const stringToHash = base64EncodedPayload + '/pg/v1/pay' + PHONEPE_SALT_KEY;
-    const sha256 = crypto.createHash('sha256').update(stringToHash).digest('hex');
-    const xVerify = sha256 + "###" + PHONEPE_SALT_INDEX;
-
-    console.log("Requesting PhonePe Sandbox Payment for", txtId);
-
-    const response = await axios.post(`${PHONEPE_HOST}/pg/v1/pay`, {
-      request: base64EncodedPayload
-    }, {
-      headers: {
-        'Content-Type': 'application/json',
-        'X-VERIFY': xVerify,
-        'accept': 'application/json'
-      }
-    });
-
-    res.json({
-        payment_session_id: txtId,
-        payment_url: response.data?.data?.instrumentResponse?.redirectInfo?.url
-    });
-
-  } catch (err) {
-    console.error("PhonePe V1 Initiation Failed:", err.response?.data || err.message);
-    
-    const fallbackLinkId = "MOCKTXN_" + req.body.orderId + "_" + Date.now();
-    return res.json({
-      payment_session_id: fallbackLinkId,
-      payment_url: "https://google.com" // mock fallback
-    });
-  }
-})
-
-/* PhonePe Browser Return Bounce (Converts PhonePe POST to a safe React GET) */
-app.post('/phonepe-redirect', async (req, res) => {
-    // PhonePe posts back to this endpoint when the user completes payment on the browser.
-    // Vercel and React Dev Servers crash if they receive POSTs, so we handle it here,
-    // and issue a safe 302 Redirect to the frontend's /orders page.
-    const origin = req.query.origin || 'https://delivery-app-system-deca.vercel.app';
-    res.redirect(`${origin}/orders`);
+const razorpay = new Razorpay({
+  key_id: RAZORPAY_KEY_ID,
+  key_secret: RAZORPAY_KEY_SECRET
 });
 
-/* Verify PhonePe Native Payment Status dynamically */
-app.get('/verify-phonepe-session/:txnId', async (req, res) => {
+app.post('/create-razorpay-order', async (req, res) => {
   try {
-    const txtId = req.params.txnId;
-
-    if (txtId.startsWith('MOCKTXN_')) {
-      const orderIdRaw = txtId.split('_')[1];
-      await pool.query('UPDATE orders SET payment_status = $1 WHERE id = $2', ['paid', orderIdRaw]).catch(() => null);
-      return res.json({ status: 'PAYMENT_SUCCESS', isPaid: true });
-    }
-
-    const stringToHash = `/pg/v1/status/${PHONEPE_MERCHANT_ID}/${txtId}` + PHONEPE_SALT_KEY;
-    const sha256 = crypto.createHash('sha256').update(stringToHash).digest('hex');
-    const xVerify = sha256 + "###" + PHONEPE_SALT_INDEX;
-
-    const response = await axios.get(`${PHONEPE_HOST}/pg/v1/status/${PHONEPE_MERCHANT_ID}/${txtId}`, {
-      headers: {
-        'Content-Type': 'application/json',
-        'X-VERIFY': xVerify,
-        'X-MERCHANT-ID': PHONEPE_MERCHANT_ID
-      }
-    });
-
-    const status = response.data?.data?.state;
-    const isPaid = status === 'COMPLETED';
-
-    if (isPaid) {
-      const orderIdRaw = txtId.split('_')[1];
-      await pool.query('UPDATE orders SET payment_status = $1 WHERE id = $2', ['paid', orderIdRaw]).catch(() => console.log('Could not update SQL post-PhonePe.'));
-    }
-
-    res.json({ status: status || 'PENDING', isPaid: isPaid });
+    const { amount, orderId } = req.body;
+    const options = {
+      amount: parseInt(amount * 100),
+      currency: "INR",
+      receipt: "receipt_order_" + orderId,
+    };
+    const order = await razorpay.orders.create(options);
+    res.json(order);
   } catch (err) {
-    console.error("PhonePe Verify Failed:", err.response?.data || err.message);
-    res.status(500).json({ error: err.response?.data?.message || err.message });
+    res.status(500).json({ error: err.message });
   }
-})
+});
 
-/* PhonePe S2S Webhook Callback */
-app.post('/verify-phonepe-callback', async (req, res) => {
+app.post('/verify-razorpay-payment', async (req, res) => {
   try {
-    const { response } = req.body;
-    if (!response) return res.status(400).send('Invalid Payload');
-
-    const decodedResponse = Buffer.from(response, 'base64').toString('utf-8');
-    const parsedData = JSON.parse(decodedResponse);
-
-    if (parsedData.code === 'PAYMENT_SUCCESS') {
-      const txtId = parsedData.data.merchantTransactionId;
-      const orderIdRaw = txtId.split('_')[1];
-      await pool.query('UPDATE orders SET payment_status = $1 WHERE id = $2', ['paid', orderIdRaw]).catch(() => console.log('Webhook SQL Update Failed'));
+    const { razorpay_order_id, razorpay_payment_id, razorpay_signature, orderId } = req.body;
+    
+    // Support mock verification for mobile simulation
+    if (razorpay_payment_id && razorpay_payment_id.startsWith('mock_')) {
+        await pool.query('UPDATE orders SET payment_status = $1 WHERE id = $2', ['paid', orderId]);
+        return res.json({ success: true, message: "Mock Payment verified" });
     }
 
-    res.status(200).send('OK');
-  } catch(err) {
-    console.error("PhonePe Webhook Failed:", err.message);
-    res.status(500).send('Error');
+    const sign = razorpay_order_id + "|" + razorpay_payment_id;
+    const expectedSign = crypto
+      .createHmac("sha256", RAZORPAY_KEY_SECRET)
+      .update(sign.toString())
+      .digest("hex");
+
+    if (razorpay_signature === expectedSign) {
+      await pool.query('UPDATE orders SET payment_status = $1 WHERE id = $2', ['paid', orderId]);
+      return res.json({ success: true, message: "Payment verified successfully" });
+    } else {
+      return res.status(400).json({ success: false, message: "Invalid signature sent!" });
+    }
+  } catch (err) {
+    res.status(500).json({ error: err.message });
   }
 });
 

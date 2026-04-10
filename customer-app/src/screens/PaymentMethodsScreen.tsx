@@ -58,12 +58,11 @@ export const PaymentMethodsScreen = () => {
 
             if (methodToUse === 'online') {
                 // Navigate to the Payment Auth screen with details
-                const phonepeRes = await axios.post(`${API_URL}/create-phonepe-session`, { amount: grandTotal, orderId: orderId, phone: user?.phone || "9999999999" });
+                const razorpayRes = await axios.post(`${API_URL}/create-razorpay-order`, { amount: grandTotal, orderId: orderId });
                 setLoading(false);
                 navigation.navigate('PaymentAuth', {
                     orderId: orderId,
-                    paymentSessionId: phonepeRes.data.payment_session_id,
-                    paymentUrl: phonepeRes.data.payment_url,
+                    paymentSessionId: razorpayRes.data.id,
                     amount: grandTotal
                 });
             } else if (methodToUse === 'wallet') {
@@ -134,7 +133,7 @@ export const PaymentMethodsScreen = () => {
                     disabled={loading}
                 >
                     <View style={styles.methodHeader}>
-                        <Text style={styles.methodTitle}>PhonePe Payments</Text>
+                        <Text style={styles.methodTitle}>Razorpay Payments</Text>
                         <View style={styles.radioContainer}>
                             {selectedMethod === 'online' && <View style={styles.radioSelected} />}
                         </View>
