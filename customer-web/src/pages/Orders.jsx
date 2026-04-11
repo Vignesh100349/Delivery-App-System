@@ -180,7 +180,7 @@ function Orders() {
                                         <div style={{ fontSize: '15px', fontWeight: '800', color: 'var(--secondary)' }}>{order.rider_name}</div>
                                     </div>
                                 </div>
-                                <a href={\`tel:\${order.rider_phone}\`} style={{ display: 'flex', alignItems: 'center', gap: '6px', background: 'var(--primary-light)', padding: '8px 16px', borderRadius: '20px', color: 'var(--primary)', fontWeight: '700', textDecoration: 'none' }}>
+                                <a href={`tel:${order.rider_phone}`} style={{ display: 'flex', alignItems: 'center', gap: '6px', background: 'var(--primary-light)', padding: '8px 16px', borderRadius: '20px', color: 'var(--primary)', fontWeight: '700', textDecoration: 'none' }}>
                                     <Phone size={14} /> Call
                                 </a>
                             </div>

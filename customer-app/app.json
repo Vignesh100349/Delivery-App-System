@@ -21,7 +21,13 @@
         "googleMaps": {
           "apiKey": "AIzaSyCYs4SaK-YQ2g68w3GKWiVK7xGeP99g0Xk"
         }
-      }
+      },
+      "permissions": [
+        "android.permission.ACCESS_COARSE_LOCATION",
+        "android.permission.ACCESS_FINE_LOCATION",
+        "android.permission.ACCESS_COARSE_LOCATION",
+        "android.permission.ACCESS_FINE_LOCATION"
+      ]
     },
     "web": {
       "favicon": "./assets/loopie_icon.png"
@@ -47,6 +53,13 @@
       "eas": {
         "projectId": "fae1471f-052f-41ad-892d-56ea914becca"
       }
-    }
+    },
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/fae1471f-052f-41ad-892d-56ea914becca"
+    },
+    "ios": {}
   }
 }

@@ -10,20 +10,27 @@ const API_URL = 'https://delivery-app-system.onrender.com';
 
 export const OrdersScreen = () => {
     const navigation = useNavigation<any>();
-    const { user } = useAuthStore();
+    const { user, isAuthenticated } = useAuthStore();
     const [orders, setOrders] = useState<any[]>([]);
     const ordersRef = useRef<any[]>([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
+        if (!user?.id) {
+            setLoading(false);
+            return;
+        }
+        
         fetchOrders();
         const poller = setInterval(() => { fetchOrders(true); }, 10000);
         return () => clearInterval(poller);
     }, [user?.id]);
 
     const fetchOrders = async (isBackground = false) => {
+        if (!user?.id) return;
+        
         try {
-            const fetchedUserId = user?.id || 1;
+            const fetchedUserId = user.id;
             const res = await axios.get(`${API_URL}/customer/orders/${fetchedUserId}`);
             const myOrders = res.data;
 
@@ -53,6 +60,19 @@ export const OrdersScreen = () => {
         return (
             <SafeAreaView style={styles.center}>
                 <ActivityIndicator size="large" color="#0c831f" />
+            </SafeAreaView>
+        );
+    }
+
+    if (!isAuthenticated || !user?.id) {
+        return (
+            <SafeAreaView style={styles.center} edges={['bottom', 'left', 'right']}>
+                <Ionicons name="lock-closed-outline" size={60} color="#ccc" />
+                <Text style={styles.emptyText}>Login required</Text>
+                <Text style={{ color: '#888', marginTop: 8, paddingHorizontal: 40, textAlign: 'center' }}>You must be logged in to view your secure delivery history.</Text>
+                <TouchableOpacity onPress={() => navigation.navigate("Profile")} style={styles.browseBtn}>
+                    <Text style={styles.browseBtnText}>Go to Login</Text>
+                </TouchableOpacity>
             </SafeAreaView>
         );
     }
